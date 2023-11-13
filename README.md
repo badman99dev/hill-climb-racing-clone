@@ -1,4 +1,4 @@
-# Gra komputerowa "Piwo to moje Paliwo"
+# Gra platformowa "Piwo to moje Paliwo"
 
 ## Autorzy
 Zespół nr. 14
