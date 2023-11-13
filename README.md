@@ -1,15 +1,21 @@
-Projekt Programowanie Aplikacyjne 2023
+# Gra komputerowa "Piwo to moje Paliwo"
 
-Gra komputerowa "Piwo to moje Paliwo"
+## Autorzy
+Zespół nr. 14
 
-Autorzy: Maciej Dobrowolski, Marcin Sikorski, Marcin Bagnowski, Joachim Czarnecki
+Maciej Dobrowolski, Marcin Sikorski, Marcin Bagnowski, Joachim Czarnecki
 
-Temat projektu: Gra platformowa na wzór gry Hill Climb Racing.
+## Informacje podstawowe
+Projekt stworzony na potrzebe przedmiotu Programowanie Aplikacyjne 2023
 
-Technologia: projekt zrealizowany w Javie, z użyciem narzędzia LibGDX.
+#### Technologia:
+Projekt zrealizowany w Javie, z użyciem narzędzia LibGDX.
 
-Funkcjonalność:
-- Kilka ręcznie stworzonych map 2d
+#### Temat projektu:
+Jednoosobowa gra platformowa na wzór gry Hill Climb Racing.
+
+#### Funkcjonalność:
+- Ręcznie stworzone mapy 2d
 - Fizyka kolizji samochodu z mapą i grawitacja, proste zawieszenie
 - Możliwość ruchu przód-tył pojazdem
 - Możliwość obrotu pojazdu wokół własnej osi w powietrzu
