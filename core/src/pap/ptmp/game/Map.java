@@ -3,18 +3,51 @@ package pap.ptmp.game;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.*;
 
 public class Map {
     private static final int SEGMENTS = 500;
-    private static final float DRAW_WIDTH = 1000f;
+    private static final float DRAW_WIDTH = 2000f;
     private static final float AMPLITUDE = 50f;
-    private static final float PERIOD = 40f;
+    private static final float PERIOD = 100f;
     private static final float VERTICAL_OFFSET = 100f;
 
     private final ShapeRenderer renderer;
+    private final World world;
 
-    public Map(ShapeRenderer Renderer) {
+    public Map(ShapeRenderer Renderer, World world) {
         this.renderer = Renderer;
+        this.world = world;
+        createGround();
+    }
+
+    private void createGround() {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.StaticBody;
+
+        bodyDef.position.set(0, 0);
+
+        Body groundBody = world.createBody(bodyDef);
+
+        ChainShape chainShape = new ChainShape();
+        Vector2[] vertices = new Vector2[SEGMENTS];
+
+        for (int i = 0; i < SEGMENTS; i++) {
+            float x = DRAW_WIDTH/SEGMENTS * i;
+            float y = calculateSinusoidalNoiseHeight(x) + VERTICAL_OFFSET;
+            vertices[i] = new Vector2(x, y);
+        }
+
+        chainShape.createChain(vertices);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = chainShape;
+        fixtureDef.density = 1.0f;
+
+        groundBody.createFixture(fixtureDef);
+
+        chainShape.dispose();
     }
 
     public void render() {
