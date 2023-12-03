@@ -1,13 +1,16 @@
 package pap.ptmp.game;
 
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.joints.WheelJoint;
 import com.badlogic.gdx.physics.box2d.joints.WheelJointDef;
 
-public class Vehicle {
+
+public class Vehicle extends InputAdapter {
     private final World world;
     private Body body; // Body for the vehicle
     private Body leftWheel; // Left wheel
@@ -17,14 +20,20 @@ public class Vehicle {
     private final float wheelRadius;
     private final float suspensionHeight;
     private final float wheelOffset;
-
-    public Vehicle(World world, float x, float y, float width, float height, float wheelRadius, float suspensionHeight, float wheelOffset) {
+    private WheelJoint leftAxis, rightAxis;
+    private final float forwardSpeed;
+    private final float backwardSpeed;
+    public Vehicle(World world, float x, float y, float width, float height,
+                   float wheelRadius, float suspensionHeight, float wheelOffset,
+                   float forwardSpeed, float backwardSpeed) {
         this.world = world;
         this.width = width;
         this.height = height;
         this.wheelRadius = wheelRadius;
         this.suspensionHeight = suspensionHeight;
         this.wheelOffset = wheelOffset;
+        this.forwardSpeed = forwardSpeed;
+        this.backwardSpeed = backwardSpeed;
 
         createBody(x, y);
         createWheels();
@@ -55,7 +64,10 @@ public class Vehicle {
 
         FixtureDef wheelFixtureDef = new FixtureDef();
         wheelFixtureDef.shape = wheelShape;
-        wheelFixtureDef.density = 1.0f;
+        wheelFixtureDef.density = 5.0f;
+        wheelFixtureDef.friction = 10f;
+        wheelFixtureDef.restitution = 0.3f;
+
 
         // Left wheel
         BodyDef leftWheelDef = new BodyDef();
@@ -71,24 +83,26 @@ public class Vehicle {
         rightWheel = world.createBody(rightWheelDef);
         rightWheel.createFixture(wheelFixtureDef);
 
-        WheelJointDef LeftSuspensionDef = new WheelJointDef();
-        LeftSuspensionDef.dampingRatio = 0.1f;
-        LeftSuspensionDef.frequencyHz = 1.5f;
-        LeftSuspensionDef.initialize(body, leftWheel, new Vector2(leftWheel.getPosition().x, leftWheel.getPosition().y), new Vector2(1f, 1f));
+        // Wheel joints and axis
+        WheelJointDef axisDef = new WheelJointDef();
+        axisDef.bodyA = body;
+        axisDef.bodyB = leftWheel;
+        axisDef.localAxisA.set(1, 1);
+        axisDef.frequencyHz = 1.5f;
+        axisDef.dampingRatio = 1f;
+        axisDef.maxMotorTorque = 100000000000f;
+        axisDef.localAnchorA.set(leftWheel.getPosition().x - body.getPosition().x, leftWheel.getPosition().y - body.getPosition().y);
+        leftAxis = (WheelJoint) world.createJoint(axisDef);
 
-        WheelJointDef RightSuspensionDef = new WheelJointDef();
-        RightSuspensionDef.dampingRatio = 0.1f;
-        RightSuspensionDef.frequencyHz = 1.5f;
-        RightSuspensionDef.initialize(body, rightWheel, new Vector2(rightWheel.getPosition().x, rightWheel.getPosition().y), new Vector2(1f, 1f));
+        axisDef.bodyB = rightWheel;
+        axisDef.localAnchorA.set(rightWheel.getPosition().x - body.getPosition().x, rightWheel.getPosition().y - body.getPosition().y);
 
-        world.createJoint(LeftSuspensionDef);
-        world.createJoint(RightSuspensionDef);
+        rightAxis = (WheelJoint) world.createJoint(axisDef);
 
         wheelShape.dispose();
     }
 
     public void render(ShapeRenderer shapeRenderer) {
-        // Render the body
         shapeRenderer.setColor(Color.BLACK);
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         float bodyX = body.getPosition().x - width / 2;
@@ -116,6 +130,44 @@ public class Vehicle {
         shapeRenderer.circle(0, 0, wheelRadius);
         shapeRenderer.identity();
         shapeRenderer.end();
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        switch(keycode) {
+            case Input.Keys.W:
+                if (!leftWheel.isFixedRotation()) {
+                    leftAxis.enableMotor(true);
+                    leftAxis.setMotorSpeed(-forwardSpeed);
+                }
+                break;
+            case Input.Keys.S:
+                if (!leftWheel.isFixedRotation()) {
+                    leftAxis.enableMotor(true);
+                    leftAxis.setMotorSpeed(backwardSpeed);
+                 }
+                break;
+            case Input.Keys.SPACE:
+                leftAxis.enableMotor(false);
+                rightAxis.enableMotor(false);
+                leftWheel.setFixedRotation(true);
+                rightWheel.setFixedRotation(true);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        switch(keycode) {
+            case Input.Keys.SPACE:
+                leftWheel.setFixedRotation(false);
+                rightWheel.setFixedRotation(false);
+            case Input.Keys.W:
+            case Input.Keys.S:
+                leftAxis.enableMotor(false);
+                break;
+        }
+       return true;
     }
 }
 
