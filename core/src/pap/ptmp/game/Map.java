@@ -8,11 +8,11 @@ import com.badlogic.gdx.physics.box2d.*;
 
 public class Map {
     private static final int SEGMENTS = 500;
-    private static final float DRAW_WIDTH = 2000f;
+    private static final float DRAW_WIDTH = 20000f;
     private static final float AMPLITUDE = 50f;
-    private static final float PERIOD = 100f;
+    private static final float PERIOD = 150f;
     private static final float VERTICAL_OFFSET = 100f;
-
+    private static final float BOOTOM_Y_COORD = -300f;
     private final ShapeRenderer renderer;
     private final World world;
 
@@ -51,8 +51,8 @@ public class Map {
     }
 
     public void render() {
-        renderer.setColor(Color.BLACK);
-        renderer.begin(ShapeRenderer.ShapeType.Line);
+        renderer.setColor(Color.GREEN);
+        renderer.begin(ShapeRenderer.ShapeType.Filled);
 
         float segmentWidth = DRAW_WIDTH / SEGMENTS;
 
@@ -63,7 +63,8 @@ public class Map {
             float y1 = calculateSinusoidalNoiseHeight(x1) + VERTICAL_OFFSET;
             float y2 = calculateSinusoidalNoiseHeight(x2) + VERTICAL_OFFSET;
 
-            renderer.line(x1, y1, x2, y2);
+            renderer.triangle(x1, y1, x2, y2, x1, BOOTOM_Y_COORD);
+            renderer.triangle(x2, y2, x1, BOOTOM_Y_COORD, x2, BOOTOM_Y_COORD);
         }
 
         renderer.end();

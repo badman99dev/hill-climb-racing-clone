@@ -37,7 +37,12 @@ public class PtmPGame extends ApplicationAdapter {
 	public void render () {
 		ScreenUtils.clear(1, 1, 1, 1);
 		world.step(1/60f, 6, 2);
+
+		camera.position.set(vehicle.getPosition().x, vehicle.getPosition().y, 0);
+		camera.zoom = 0.5f;
 		camera.update();
+		renderer.setProjectionMatrix(camera.combined);
+
 		map.render();
 		vehicle.render(renderer);
 		debugRenderer.render(world, camera.combined);
