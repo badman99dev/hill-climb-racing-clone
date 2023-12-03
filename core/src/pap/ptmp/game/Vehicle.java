@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.badlogic.gdx.physics.box2d.joints.WheelJoint;
 import com.badlogic.gdx.physics.box2d.joints.WheelJointDef;
 
 public class Vehicle {
@@ -82,8 +81,8 @@ public class Vehicle {
         RightSuspensionDef.frequencyHz = 1.5f;
         RightSuspensionDef.initialize(body, rightWheel, new Vector2(rightWheel.getPosition().x, rightWheel.getPosition().y), new Vector2(1f, 1f));
 
-        WheelJoint LeftSuspension = (WheelJoint) world.createJoint(LeftSuspensionDef);
-        WheelJoint RightSuspension = (WheelJoint) world.createJoint(RightSuspensionDef);
+        world.createJoint(LeftSuspensionDef);
+        world.createJoint(RightSuspensionDef);
 
         wheelShape.dispose();
     }
