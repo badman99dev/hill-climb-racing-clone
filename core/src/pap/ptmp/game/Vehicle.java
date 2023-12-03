@@ -88,7 +88,7 @@ public class Vehicle extends InputAdapter {
         WheelJointDef axisDef = new WheelJointDef();
         axisDef.bodyA = body;
         axisDef.bodyB = leftWheel;
-        axisDef.localAxisA.set(1, 1);
+        axisDef.localAxisA.set(0, 1);
         axisDef.frequencyHz = 1.5f;
         axisDef.dampingRatio = 1f;
         axisDef.maxMotorTorque = 100000000000f;
