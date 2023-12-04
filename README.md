@@ -23,3 +23,15 @@ Jednoosobowa gra platformowa na wzór gry Hill Climb Racing.
 - Zbieranie monet na ulepszenia
 - Zapis najlepszych wyników na mapie
 - (opcjonalne) Dodanie różnych modeli pojazdów
+
+## Aktualna funkcjonalność
+
+#### Prototyp
+- Działająca fizyka
+- Prototyp samochodu z działającym zawieszeniem
+- Możliwość sterowania samochodem:
+    - W - jazda do przodu
+    - S - jazda do tyłu
+    - SPACJA - hamulec
+- Generowana mapa w kształcie sinusoidy
+- Kamera podążająca za graczem
