@@ -5,9 +5,10 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import fastnoiseLite.*;
 
 public class Map {
-    private static final int SEGMENTS = 500;
+    private static final int SEGMENTS = 1000;
     private static final float DRAW_WIDTH = 20000f;
     private static final float AMPLITUDE = 50f;
     private static final float PERIOD = 150f;
@@ -15,10 +16,13 @@ public class Map {
     private static final float BOOTOM_Y_COORD = -300f;
     private final ShapeRenderer renderer;
     private final World world;
+    private final FastNoiseLite noiseGenerator;
 
-    public Map(ShapeRenderer Renderer, World world) {
+    public Map(ShapeRenderer Renderer, World world, int map_seed) {
         this.renderer = Renderer;
         this.world = world;
+        this.noiseGenerator = new FastNoiseLite(map_seed);
+        noiseGenerator.SetFrequency((float) 0.002);
         createGround();
     }
 
@@ -35,7 +39,7 @@ public class Map {
 
         for (int i = 0; i < SEGMENTS; i++) {
             float x = DRAW_WIDTH/SEGMENTS * i;
-            float y = calculateSinusoidalNoiseHeight(x) + VERTICAL_OFFSET;
+            float y = calculatePerlinHeight(x) + VERTICAL_OFFSET;
             vertices[i] = new Vector2(x, y);
         }
 
@@ -60,8 +64,8 @@ public class Map {
             float x1 = i * segmentWidth;
             float x2 = (i + 1) * segmentWidth;
 
-            float y1 = calculateSinusoidalNoiseHeight(x1) + VERTICAL_OFFSET;
-            float y2 = calculateSinusoidalNoiseHeight(x2) + VERTICAL_OFFSET;
+            float y1 = calculatePerlinHeight(x1) + VERTICAL_OFFSET;
+            float y2 = calculatePerlinHeight(x2) + VERTICAL_OFFSET;
 
             renderer.triangle(x1, y1, x2, y2, x1, BOOTOM_Y_COORD);
             renderer.triangle(x2, y2, x1, BOOTOM_Y_COORD, x2, BOOTOM_Y_COORD);
@@ -74,5 +78,9 @@ public class Map {
         // Use Perlin noise to generate a wavy ground
         float sinValue = MathUtils.sin(x / PERIOD);
         return AMPLITUDE * sinValue;
+    }
+
+    private float calculatePerlinHeight(float x) {
+        return noiseGenerator.GetNoise(x, 1) * 100;
     }
 }

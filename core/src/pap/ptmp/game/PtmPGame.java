@@ -24,7 +24,7 @@ public class PtmPGame extends ApplicationAdapter {
 		renderer = new ShapeRenderer();
 		renderer.setProjectionMatrix(camera.combined);
 		world = new World(new Vector2(0, -98f), false);
-		map = new Map(renderer, world);
+		map = new Map(renderer, world, 999);
 		vehicle = new Vehicle(world, 300f, 300f, 100f, 20f, 10f,
 				20f, 10f, 20f, 15f);
 		debugRenderer = new Box2DDebugRenderer();
@@ -45,7 +45,7 @@ public class PtmPGame extends ApplicationAdapter {
 
 		map.render();
 		vehicle.render(renderer);
-		debugRenderer.render(world, camera.combined);
+//		debugRenderer.render(world, camera.combined);   //debug renderer works only if map segments <= 1000
 	}
 
 	@Override
