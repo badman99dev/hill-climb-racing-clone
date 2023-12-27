@@ -22,7 +22,7 @@ public class Map {
         this.renderer = Renderer;
         this.world = world;
         this.noiseGenerator = new FastNoiseLite(map_seed);
-        noiseGenerator.SetFrequency((float) 0.002);
+        noiseGenerator.SetFrequency((float) 0.001);
         createGround();
     }
 

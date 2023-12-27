@@ -24,11 +24,12 @@ public class PtmPGame extends ApplicationAdapter {
 		renderer = new ShapeRenderer();
 		renderer.setProjectionMatrix(camera.combined);
 		world = new World(new Vector2(0, -98f), false);
-		map = new Map(renderer, world, 999);
+		MapIO mapData = new MapIO("../core/src/maps.txt");
+		mapData.loadMapData(2);
+		map = new Map(renderer, world, mapData.seed);
 		vehicle = new Vehicle(world, 300f, 300f, 100f, 20f, 10f,
 				20f, 10f, 20f, 15f);
 		debugRenderer = new Box2DDebugRenderer();
-
 
 		Gdx.input.setInputProcessor(vehicle);
 	}
