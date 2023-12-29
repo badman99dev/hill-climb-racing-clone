@@ -1,6 +1,9 @@
 package pap.ptmp.game;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -17,6 +20,9 @@ public class Map {
     private final ShapeRenderer renderer;
     private final World world;
     private final FastNoiseLite noiseGenerator;
+    private final String escapeText = "Esc-Menu";
+    private SpriteBatch spriteBatch;
+    private BitmapFont font;
 
     public Map(ShapeRenderer Renderer, World world, int map_seed) {
         this.renderer = Renderer;
@@ -24,6 +30,9 @@ public class Map {
         this.noiseGenerator = new FastNoiseLite(map_seed);
         noiseGenerator.SetFrequency((float) 0.001);
         createGround();
+        spriteBatch = new SpriteBatch();
+        font = new BitmapFont();
+
     }
 
     private void createGround() {
@@ -71,6 +80,11 @@ public class Map {
             renderer.triangle(x2, y2, x1, BOOTOM_Y_COORD, x2, BOOTOM_Y_COORD);
         }
 
+        spriteBatch.begin();
+        font.setColor(Color.BLUE);
+        font.draw(spriteBatch, escapeText, 20, Gdx.graphics.getHeight() - 15);
+        spriteBatch.end();
+
         renderer.end();
     }
 
@@ -82,5 +96,10 @@ public class Map {
 
     private float calculatePerlinHeight(float x) {
         return noiseGenerator.GetNoise(x, 1) * 100;
+    }
+
+    public void dispose() {
+        spriteBatch.dispose();
+        font.dispose();
     }
 }
