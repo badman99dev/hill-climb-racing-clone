@@ -55,8 +55,8 @@ public class MapIO {
     public void updateHighScore(int targetId, float newHighScore) {
         try {
             // Read the existing content
-            FileReader fileReader = new FileReader(filename);
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            FileHandle fileHandle = Gdx.files.internal(filename);
+            BufferedReader bufferedReader = new BufferedReader(fileHandle.reader());
             StringBuilder fileContent = new StringBuilder();
 
             String line;
@@ -74,19 +74,11 @@ public class MapIO {
                 fileContent.append(updatedLine).append("\n");
             }
 
-            // Close the resources
+            //Save to file
+            FileHandle outputFileHandle = Gdx.files.local(filename);
+            outputFileHandle.writeString(fileContent.toString(), false);
             bufferedReader.close();
-            fileReader.close();
 
-            // Write the updated content back to the file
-            FileWriter fileWriter = new FileWriter(filename);
-            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-
-            bufferedWriter.write(fileContent.toString());
-
-            // Close the resources
-            bufferedWriter.close();
-            fileWriter.close();
         } catch (FileNotFoundException e) {
             System.err.println("File not found: " + e.getMessage());
         } catch (IOException e) {
