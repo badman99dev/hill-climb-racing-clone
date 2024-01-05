@@ -8,7 +8,9 @@ public class MapIO {
     int id = -1;
     int seed = -1;
     float high_score = -1;
+    float gravity = 0;
     String filename = "";
+    String map_name = "";
 
     public MapIO(String set_filename) {
          filename = set_filename;
@@ -28,6 +30,8 @@ public class MapIO {
                     id = file_id;
                     seed = Integer.parseInt(values[1]);
                     high_score = Float.parseFloat((values[2]));
+                    gravity = Float.parseFloat(values[3]);
+                    map_name = values[4];
                 }
             }
             if (id == -1) {
