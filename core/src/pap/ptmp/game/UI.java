@@ -19,7 +19,7 @@ public class UI extends Game{
         assets.getAssetManager().finishLoading();
         batch = new SpriteBatch();
         font = new BitmapFont();
-        gameScreen = new PtmPGame(this);
+        //gameScreen = new PtmPGame(this);
         pauseScreen = new PauseScreen(assets.getAssetManager(), this);
         mainMenu = new MainMenuScreen(assets.getAssetManager(), this);
         setScreen(mainMenu);
@@ -33,8 +33,8 @@ public class UI extends Game{
         setScreen(gameScreen);
     }
 
-    public void resetGame(){
-        this.gameScreen = new PtmPGame(this);
+    public void resetGame(MapIO.MapData mapData){
+        this.gameScreen = new PtmPGame(this, mapData);
         this.setGameScreen();
     }
 

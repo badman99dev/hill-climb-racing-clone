@@ -21,14 +21,12 @@ public class PtmPGame extends ScreenAdapter{
 	private Box2DDebugRenderer debugRenderer;
 	private UI game;
 
-	public PtmPGame(UI game){
+	public PtmPGame(UI game, MapIO.MapData mapData){
 		this.game = game;
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, 1920, 1080);
 		renderer = new ShapeRenderer();
 		renderer.setProjectionMatrix(camera.combined);
-		MapIO mapData = new MapIO("maps.txt");
-		mapData.loadMapData(1);
 		world = new World(new Vector2(0, mapData.gravity), false);
 		map = new Map(renderer, world, mapData.seed);
 		vehicle = new Vehicle(world, 1000f, 300f, 100f, 20f, 10f,

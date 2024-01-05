@@ -41,7 +41,7 @@ public class MainMenuScreen extends ScreenAdapter{
         addButton("Graj").addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y){
-                game.resetGame();
+                game.setScreen(new MapSelectScreen(assetManager, game));
             }
         });
         addButton("Sterowanie").addListener(new ClickListener(){
