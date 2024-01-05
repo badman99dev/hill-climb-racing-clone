@@ -95,7 +95,7 @@ public class Map {
     }
 
     private float calculatePerlinHeight(float x) {
-        return noiseGenerator.GetNoise(x, 1) * 100;
+        return noiseGenerator.GetNoise(x, 1) * (50 * (float) Math.log(x * 0.01f));
     }
 
     public void dispose() {
