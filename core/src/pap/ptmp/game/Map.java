@@ -60,6 +60,18 @@ public class Map {
 
         groundBody.createFixture(fixtureDef);
 
+        //create invisible wall
+        BodyDef wallDef = new BodyDef();
+        wallDef.type = BodyDef.BodyType.StaticBody; // Static body type
+        wallDef.position.set(500, 0); // Set the initial position (x, y)
+        Body wallBody = world.createBody(wallDef);
+        PolygonShape wallShape = new PolygonShape();
+        wallShape.setAsBox(20, 1000);
+
+        //fixtureDef = new FixtureDef();
+        fixtureDef.shape = wallShape;
+        wallBody.createFixture(fixtureDef);
+
         chainShape.dispose();
     }
 
@@ -95,7 +107,7 @@ public class Map {
     }
 
     private float calculatePerlinHeight(float x) {
-        return noiseGenerator.GetNoise(x, 1) * 100;
+        return noiseGenerator.GetNoise(x, 1) * (50 * (float) Math.log(x * 0.01f));
     }
 
     public void dispose() {
