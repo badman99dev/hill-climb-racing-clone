@@ -4,22 +4,43 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 
 import java.io.*;
-
+import java.util.ArrayList;
 
 
 public class MapIO {
-    int id = -1;
-    int seed = -1;
-    float high_score = -1;
-    float gravity = 0;
-    String filename = "";
-    String map_name = "";
 
-    public MapIO(String set_filename) {
-         filename = set_filename;
+    public class MapData {
+        int id = -1;
+        int seed = -1;
+        float high_score = -1;
+        float gravity = 0;
+        String name = "";
+
+        public MapData(int id, int seed, float high_score, float gravity, String name)
+        {
+            this.id = id;
+            this.seed = seed;
+            this.high_score = high_score;
+            this.gravity = gravity;
+            this.name = name;
+        }
     }
 
-    public void loadMapData(int target_id) {
+    String filename = "";
+    ArrayList<MapData> loadedMaps;
+
+    public MapIO(String set_filename) {
+        filename = set_filename;
+        loadedMaps = new ArrayList<MapData>();
+        loadMapData();
+    }
+
+    public ArrayList<MapData> getMaps()
+    {
+        return loadedMaps;
+    }
+
+    private void loadMapData() {
         try {
             FileHandle fileHandle = Gdx.files.internal(filename);
             BufferedReader bufferedReader = new BufferedReader(fileHandle.reader());
@@ -28,17 +49,13 @@ public class MapIO {
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 String[] values = line.split(",");
-                int file_id = Integer.parseInt(values[0]);
-                if(file_id == target_id) {
-                    id = file_id;
-                    seed = Integer.parseInt(values[1]);
-                    high_score = Float.parseFloat((values[2]));
-                    gravity = Float.parseFloat(values[3]);
-                    map_name = values[4];
-                }
-            }
-            if (id == -1) {
-                System.err.println("Invalid map id provided");
+                int id = Integer.parseInt(values[0]);
+                int seed = Integer.parseInt(values[1]);
+                float high_score = Float.parseFloat((values[2]));
+                float gravity = Float.parseFloat(values[3]);
+                String map_name = values[4];
+
+                loadedMaps.add(new MapData(id, seed, high_score, gravity, map_name));
             }
 
             // Close the resources
@@ -84,6 +101,6 @@ public class MapIO {
         } catch (IOException e) {
             System.err.println("IO exception: " + e.getMessage());
         }
-        loadMapData((id));
+        //loadMapData((id));
     }
 }
