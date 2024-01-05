@@ -28,7 +28,7 @@ public class PtmPGame extends ScreenAdapter{
 		renderer = new ShapeRenderer();
 		renderer.setProjectionMatrix(camera.combined);
 		MapIO mapData = new MapIO("maps.txt");
-		mapData.loadMapData(3);
+		mapData.loadMapData(1);
 		world = new World(new Vector2(0, mapData.gravity), false);
 		map = new Map(renderer, world, mapData.seed);
 		vehicle = new Vehicle(world, 1000f, 300f, 100f, 20f, 10f,
