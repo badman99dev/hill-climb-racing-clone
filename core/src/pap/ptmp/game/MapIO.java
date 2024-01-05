@@ -1,5 +1,8 @@
 package pap.ptmp.game;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
+
 import java.io.*;
 
 
@@ -18,8 +21,8 @@ public class MapIO {
 
     public void loadMapData(int target_id) {
         try {
-            FileReader fileReader = new FileReader(filename);
-            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            FileHandle fileHandle = Gdx.files.internal(filename);
+            BufferedReader bufferedReader = new BufferedReader(fileHandle.reader());
 
             // Reading file content (this part is just an example and may not work if the file doesn't exist)
             String line;
@@ -40,7 +43,6 @@ public class MapIO {
 
             // Close the resources
             bufferedReader.close();
-            fileReader.close();
         } catch (FileNotFoundException e) {
             // Handle the exception when the file is not found
             System.err.println("File not found: " + e.getMessage());
