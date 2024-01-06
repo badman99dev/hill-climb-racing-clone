@@ -2,9 +2,11 @@ package pap.ptmp.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -12,7 +14,9 @@ import fastnoiseLite.*;
 
 public class Map {
     private static final int SEGMENTS = 1000;
-    private static final float DRAW_WIDTH = 20000f;
+    private static final float SEGMENT_WIDTH = 20f;
+    private static final float CHUNK_SIZE = 1000f;
+    //private static final float DRAW_WIDTH = 20000f;
     private static final float AMPLITUDE = 50f;
     private static final float PERIOD = 150f;
     private static final float VERTICAL_OFFSET = 100f;
@@ -20,45 +24,28 @@ public class Map {
     private final ShapeRenderer renderer;
     private final World world;
     private final FastNoiseLite noiseGenerator;
-    private final String escapeText = "Esc-Menu";
-    private SpriteBatch spriteBatch;
-    private BitmapFont font;
+    private Body groundBody;
+    private int currentChunk;
 
     public Map(ShapeRenderer Renderer, World world, int map_seed) {
         this.renderer = Renderer;
         this.world = world;
         this.noiseGenerator = new FastNoiseLite(map_seed);
         noiseGenerator.SetFrequency((float) 0.001);
-        createGround();
-        spriteBatch = new SpriteBatch();
-        font = new BitmapFont();
-
+        createGroundAndWall();
     }
 
-    private void createGround() {
+    private void createGroundAndWall() {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;
 
         bodyDef.position.set(0, 0);
 
-        Body groundBody = world.createBody(bodyDef);
-
-        ChainShape chainShape = new ChainShape();
-        Vector2[] vertices = new Vector2[SEGMENTS];
-
-        for (int i = 0; i < SEGMENTS; i++) {
-            float x = DRAW_WIDTH/SEGMENTS * i;
-            float y = calculatePerlinHeight(x) + VERTICAL_OFFSET;
-            vertices[i] = new Vector2(x, y);
-        }
-
-        chainShape.createChain(vertices);
+        groundBody = world.createBody(bodyDef);
+        createGround(0.0f);
 
         FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = chainShape;
         fixtureDef.density = 1.0f;
-
-        groundBody.createFixture(fixtureDef);
 
         //create invisible wall
         BodyDef wallDef = new BodyDef();
@@ -68,22 +55,67 @@ public class Map {
         PolygonShape wallShape = new PolygonShape();
         wallShape.setAsBox(20, 1000);
 
-        //fixtureDef = new FixtureDef();
         fixtureDef.shape = wallShape;
         wallBody.createFixture(fixtureDef);
 
+        wallShape.dispose();
+    }
+
+    private void createGround(float start)
+    {
+        // Add a bit of extra segments across chunk boundaries so it stays smooth.   
+        float end = start + CHUNK_SIZE + 50.0f;
+        start -= 50.0f;
+        start = Math.max(start, 0.0f);
+
+        int segmentStart = (int)Math.floor((double)(start / SEGMENT_WIDTH));
+        int segmentEnd = (int)Math.ceil((double)(end / SEGMENT_WIDTH));
+        int numSegments = segmentEnd - segmentStart + 1;
+
+        Vector2[] vertices = new Vector2[numSegments];
+
+        for (int i = segmentStart; i <= segmentEnd; i++) {
+            float x1 = i * SEGMENT_WIDTH;
+            float y1 = calculatePerlinHeight(x1) + VERTICAL_OFFSET;
+            vertices[i - segmentStart] = new Vector2(x1, y1);
+        }
+
+        ChainShape chainShape = new ChainShape();
+        chainShape.createChain(vertices);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = chainShape;
+        fixtureDef.density = 1.0f;
+
+        groundBody.createFixture(fixtureDef);
         chainShape.dispose();
     }
 
-    public void render() {
+    public void render(OrthographicCamera camera) {
         renderer.setColor(Color.GREEN);
         renderer.begin(ShapeRenderer.ShapeType.Filled);
 
-        float segmentWidth = DRAW_WIDTH / SEGMENTS;
+        // Don't update the ground shape every frame
+        // because the performance goes down.
+        int newChunk = (int)(camera.position.x / CHUNK_SIZE);
+        if (newChunk != currentChunk)
+        {
+            //System.out.println("CHUNK: " + newChunk);
+            createGround((float)newChunk * CHUNK_SIZE);
+            currentChunk = newChunk;
+        }
 
-        for (int i = 0; i < SEGMENTS; i++) {
-            float x1 = i * segmentWidth;
-            float x2 = (i + 1) * segmentWidth;
+        // Render only what is visible.
+        //
+        float minX = camera.position.x - 0.25f * camera.viewportWidth;
+        float maxX = camera.position.x + 0.25f * camera.viewportWidth;
+
+        int segmentStart = (int)Math.floor((double)(minX / SEGMENT_WIDTH));
+        int segmentEnd = (int)Math.ceil((double)(maxX / SEGMENT_WIDTH));
+
+        for (int i = segmentStart; i <= segmentEnd; i++) {
+            float x1 = i * SEGMENT_WIDTH;
+            float x2 = (i + 1) * SEGMENT_WIDTH;
 
             float y1 = calculatePerlinHeight(x1) + VERTICAL_OFFSET;
             float y2 = calculatePerlinHeight(x2) + VERTICAL_OFFSET;
@@ -92,10 +124,9 @@ public class Map {
             renderer.triangle(x2, y2, x1, BOOTOM_Y_COORD, x2, BOOTOM_Y_COORD);
         }
 
-        spriteBatch.begin();
-        font.setColor(Color.BLUE);
-        font.draw(spriteBatch, escapeText, 20, Gdx.graphics.getHeight() - 15);
-        spriteBatch.end();
+        // DEBUG
+        //renderer.line(minX+1, 0, minX+1, 500, Color.RED, Color.RED);
+        //renderer.line(maxX-1, 0, maxX-1, 500, Color.RED, Color.RED);
 
         renderer.end();
     }
@@ -111,7 +142,5 @@ public class Map {
     }
 
     public void dispose() {
-        spriteBatch.dispose();
-        font.dispose();
     }
 }
