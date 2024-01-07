@@ -25,7 +25,7 @@ public class PtmPGame extends ScreenAdapter{
 	private UI game;
 	private final String escapeText = "Esc-Menu";
 	private SpriteBatch spriteBatch;
-    private BitmapFont font;
+	private BitmapFont font;
 
 	public PtmPGame(UI game, MapIO.MapData mapData){
 		this.game = game;
@@ -39,7 +39,7 @@ public class PtmPGame extends ScreenAdapter{
 				20f, 10f, 20f, 15f);
 		debugRenderer = new Box2DDebugRenderer();
 		spriteBatch = new SpriteBatch();
-        font = new BitmapFont();
+		font = new BitmapFont();
 	}
 
 	@Override
@@ -61,22 +61,22 @@ public class PtmPGame extends ScreenAdapter{
 		vehicle.render(renderer);
 
 		spriteBatch.begin();
-        font.setColor(Color.BLUE);
+		font.setColor(Color.BLUE);
 		String fpsText = "FPS: " + Gdx.graphics.getFramesPerSecond();
-        font.draw(spriteBatch, escapeText, 20, Gdx.graphics.getHeight() - 15);
+		font.draw(spriteBatch, escapeText, 20, Gdx.graphics.getHeight() - 15);
 		font.draw(spriteBatch, fpsText, 20, Gdx.graphics.getHeight() - 30);
-        spriteBatch.end();
+		spriteBatch.end();
 
 		if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
 			game.setPauseScreen();
-        }
+		}
 //		debugRenderer.render(world, camera.combined);   //debug renderer works only if map segments <= 1000
 	}
 
 	@Override
 	public void dispose () {
 		spriteBatch.dispose();
-        font.dispose();
+		font.dispose();
 		renderer.dispose();
 	}
 }
