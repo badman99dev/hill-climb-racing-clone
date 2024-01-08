@@ -26,6 +26,9 @@ public class PtmPGame extends ScreenAdapter{
 	private final String escapeText = "Esc-Menu";
 	private SpriteBatch spriteBatch;
 	private BitmapFont font;
+	private String fpsText, scoreText, highscoreText;
+	private float highscore, bestposition = 0;
+	private int mapID;
 
 	public PtmPGame(UI game, MapIO.MapData mapData){
 		this.game = game;
@@ -40,6 +43,8 @@ public class PtmPGame extends ScreenAdapter{
 		debugRenderer = new Box2DDebugRenderer();
 		spriteBatch = new SpriteBatch();
 		font = new BitmapFont();
+		highscore = mapData.high_score;
+		mapID = mapData.id;
 	}
 
 	@Override
@@ -61,14 +66,22 @@ public class PtmPGame extends ScreenAdapter{
 		map.render(camera);
 		vehicle.render(renderer);
 
+		bestposition = Math.max(bestposition, vehicle.getPosition().x - 1000f);
 		spriteBatch.begin();
 		font.setColor(Color.BLUE);
-		String fpsText = "FPS: " + Gdx.graphics.getFramesPerSecond();
+		fpsText = "FPS: " + Gdx.graphics.getFramesPerSecond();
+		scoreText = "Score: " + Math.round(bestposition);
+		highscoreText = "Highscore: " + Math.round(highscore);
 		font.draw(spriteBatch, escapeText, 20, Gdx.graphics.getHeight() - 15);
 		font.draw(spriteBatch, fpsText, 20, Gdx.graphics.getHeight() - 30);
+		font.draw(spriteBatch, scoreText, 20, Gdx.graphics.getHeight() - 45);
+		font.draw(spriteBatch, highscoreText, 20, Gdx.graphics.getHeight() - 60);
 		spriteBatch.end();
 
 		if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+			if(bestposition > highscore){
+				MapIO.updateHighScore(mapID, bestposition);
+			}
 			game.setPauseScreen();
 		}
 //		debugRenderer.render(world, camera.combined);   //debug renderer works only if map segments <= 1000

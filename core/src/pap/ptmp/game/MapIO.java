@@ -26,11 +26,11 @@ public class MapIO {
         }
     }
 
-    String filename = "";
+    static String filename = "./assets/maps.txt";
     ArrayList<MapData> loadedMaps;
 
-    public MapIO(String set_filename) {
-        filename = set_filename;
+    public MapIO() {
+        // filename = set_filename;
         loadedMaps = new ArrayList<MapData>();
         loadMapData();
     }
@@ -69,7 +69,7 @@ public class MapIO {
         }
     }
 
-    public void updateHighScore(int targetId, float newHighScore) {
+    static public void updateHighScore(int targetId, float newHighScore) {
         try {
             // Read the existing content
             FileHandle fileHandle = Gdx.files.internal(filename);

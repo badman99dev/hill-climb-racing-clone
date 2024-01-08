@@ -33,7 +33,7 @@ public class MapSelectScreen extends ScreenAdapter  {
         mainTable.setFillParent(true);
         stage.addActor(mainTable);
         accum = 0.0f;
-        mapLoader = new MapIO("maps.txt");
+        mapLoader = new MapIO();
     }
 
     @Override

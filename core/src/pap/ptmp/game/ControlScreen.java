@@ -42,7 +42,6 @@ public class ControlScreen extends ScreenAdapter {
         mainTable.add(addImageLabel(imageTexture, 90, 90, " - jazda wstecz")).row();
         imageTexture = assetManager.get(Assets.SPACE_IMAGE);
         mainTable.add(addImageLabel(imageTexture, 270, 90, " - hamulec")).row();
-
     }
 
     @Override
