@@ -1,13 +1,17 @@
 package pap.ptmp.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import fastnoiseLite.*;
@@ -20,18 +24,27 @@ public class Map {
     private static final float AMPLITUDE = 50f;
     private static final float PERIOD = 150f;
     private static final float VERTICAL_OFFSET = 100f;
-    private static final float BOOTOM_Y_COORD = -300f;
+    private static final float BOOTOM_Y_COORD = 300f;
     private final ShapeRenderer renderer;
     private final World world;
     private final FastNoiseLite noiseGenerator;
     private Body groundBody;
     private int currentChunk;
+    private final SpriteBatch spriteBatch;
+    private final Texture groundTexture;
+    private final Color skyColor;
 
-    public Map(ShapeRenderer Renderer, World world, int map_seed) {
+
+    public Map(ShapeRenderer Renderer, World world, Texture groundTexture, Color skyColor, int map_seed) {
         this.renderer = Renderer;
         this.world = world;
         this.noiseGenerator = new FastNoiseLite(map_seed);
+        this.spriteBatch = new SpriteBatch();
+        spriteBatch.setProjectionMatrix(new Matrix4());
         noiseGenerator.SetFrequency((float) 0.1);
+
+        this.groundTexture = groundTexture;
+        this.skyColor = skyColor;
         createGroundAndWall();
     }
 
@@ -92,7 +105,18 @@ public class Map {
     }
 
     public void render(OrthographicCamera camera) {
-        renderer.setColor(Color.GREEN);
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        spriteBatch.begin();
+        spriteBatch.setProjectionMatrix(camera.combined);
+        for (int i = 0; i < 20000; i+=5)
+            for (int j = 70; j <= 130; j+= 5) {
+                spriteBatch.draw(groundTexture, i, j, 5, 5);
+            }
+        spriteBatch.end();
+
+        renderer.setColor(skyColor);
         renderer.begin(ShapeRenderer.ShapeType.Filled);
 
         // Don't update the ground shape every frame

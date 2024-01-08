@@ -15,6 +15,9 @@ public class Assets {
     public static final String PIWO_IMAGE = "piwo.png";
     public static final String SETTINGS_IMAGE = "settings.png";
     public static final String PAUSE_IMAGE = "pause.png";
+    public static final String GRASS_TEXTURE = "grass.png";
+    public static final String MARS_TEXTURE = "mars.jpg";
+    public static final String MOON_TEXTURE = "moon.png";
 
 
     public void loadAll(){
@@ -25,6 +28,9 @@ public class Assets {
         assetManager.load(PIWO_IMAGE, Texture.class);
         assetManager.load(SETTINGS_IMAGE, Texture.class);
         assetManager.load(PAUSE_IMAGE, Texture.class);
+        assetManager.load(GRASS_TEXTURE, Texture.class);
+        assetManager.load(MARS_TEXTURE, Texture.class);
+        assetManager.load(MOON_TEXTURE, Texture.class);
     }
 
     public AssetManager getAssetManager(){

@@ -126,12 +126,12 @@ public class Vehicle extends InputAdapter {
 
         shapeRenderer.translate(leftWheel.getPosition().x, leftWheel.getPosition().y, 0);
         shapeRenderer.rotate(0, 0, 1, MathUtils.radiansToDegrees * leftWheel.getAngle());
-        shapeRenderer.circle(0, 0, wheelRadius);
+        shapeRenderer.circle(0, 0, wheelRadius, 10);
         shapeRenderer.identity();
 
         shapeRenderer.translate(rightWheel.getPosition().x, rightWheel.getPosition().y, 0);
         shapeRenderer.rotate(0, 0, 1, MathUtils.radiansToDegrees * rightWheel.getAngle());
-        shapeRenderer.circle(0, 0, wheelRadius);
+        shapeRenderer.circle(0, 0, wheelRadius, 10);
         shapeRenderer.identity();
         shapeRenderer.end();
     }
@@ -189,7 +189,6 @@ public class Vehicle extends InputAdapter {
             body.applyAngularImpulse(-0.005f, true);
         } else if (rotate_left) {
             body.applyAngularImpulse(0.005f, true);
-            System.out.println(body.getAngularVelocity());
         }
     }
 }

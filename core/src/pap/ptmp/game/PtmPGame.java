@@ -7,6 +7,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -33,15 +34,19 @@ public class PtmPGame extends ScreenAdapter{
 	public PtmPGame(UI game, MapIO.MapData mapData){
 		this.game = game;
 		camera = new OrthographicCamera();
+		spriteBatch = new SpriteBatch();
 		camera.setToOrtho(false, 1920, 1080);
 		renderer = new ShapeRenderer();
 		renderer.setProjectionMatrix(camera.combined);
 		world = new World(new Vector2(0, mapData.gravity), false);
-		map = new Map(renderer, world, mapData.seed);
+
+		MapIO tempIO = new MapIO();
+		Texture groundTexture = tempIO.getTexture(mapData.id);
+		Color skyColor = tempIO.getColor(mapData.id);
+		map = new Map(renderer, world, groundTexture, skyColor, mapData.seed);
 		vehicle = new Vehicle(world, 1000f, 100f, 1f, 0.2f, 0.1f,
 				0.2f, 0.1f, 40f, 30f);
 		debugRenderer = new Box2DDebugRenderer();
-		spriteBatch = new SpriteBatch();
 		font = new BitmapFont();
 		highscore = mapData.high_score;
 		mapID = mapData.id;

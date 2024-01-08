@@ -1,7 +1,10 @@
 package pap.ptmp.game;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -26,7 +29,7 @@ public class MapIO {
         }
     }
 
-    static String filename = "./assets/maps.txt";
+    static String filename = "./maps.txt";
     ArrayList<MapData> loadedMaps;
 
     public MapIO() {
@@ -102,5 +105,37 @@ public class MapIO {
             System.err.println("IO exception: " + e.getMessage());
         }
         //loadMapData((id));
+    }
+
+    Texture getTexture(int id) {
+        Assets assets = new Assets();
+        assets.loadAll();
+        AssetManager assetManager = assets.getAssetManager();
+        assetManager.finishLoading();
+        switch (id) {
+            case 1:
+                return assetManager.get(Assets.GRASS_TEXTURE);
+            case 2:
+                return assetManager.get(Assets.MARS_TEXTURE);
+            case 3:
+                return assetManager.get(Assets.MOON_TEXTURE);
+            default:
+                Gdx.app.error("Texture error", "Invalid map id: " + id);
+                return null;
+        }
+    }
+
+    Color getColor(int id) {
+        switch (id) {
+            case 1:
+                return new Color(Color.SKY);
+            case 2:
+                return new Color(Color.ORANGE);
+            case 3:
+                return new Color(Color.GRAY);
+            default:
+                Gdx.app.error("Color error", "Invalid map id: " + id);
+                return null;
+        }
     }
 }
