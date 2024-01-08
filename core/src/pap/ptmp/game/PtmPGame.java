@@ -1,7 +1,5 @@
 package pap.ptmp.game;
 
-import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
@@ -34,9 +32,9 @@ public class PtmPGame extends ScreenAdapter{
 		renderer = new ShapeRenderer();
 		renderer.setProjectionMatrix(camera.combined);
 		world = new World(new Vector2(0, mapData.gravity), false);
-		map = new Map(renderer, world, mapData.seed);
 		vehicle = new Vehicle(world, 1000f, 100f, 1f, 0.2f, 0.1f,
 				0.2f, 0.1f, 40f, 30f);
+		map = new Map(renderer, world, mapData.seed, vehicle);
 		debugRenderer = new Box2DDebugRenderer();
 		spriteBatch = new SpriteBatch();
 		font = new BitmapFont();
@@ -71,7 +69,7 @@ public class PtmPGame extends ScreenAdapter{
 		if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
 			game.setPauseScreen();
 		}
-//		debugRenderer.render(world, camera.combined);   //debug renderer works only if map segments <= 1000
+		debugRenderer.render(world, camera.combined);   //debug renderer works only if map segments <= 1000
 	}
 
 	@Override

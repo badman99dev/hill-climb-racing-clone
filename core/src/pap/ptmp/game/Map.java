@@ -1,16 +1,12 @@
 package pap.ptmp.game;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import fastnoiseLite.*;
+import fastnoiseLite.FastNoiseLite;
 
 public class Map {
     private static final int SEGMENTS = 1000;
@@ -27,12 +23,16 @@ public class Map {
     private Body groundBody;
     private int currentChunk;
 
-    public Map(ShapeRenderer Renderer, World world, int map_seed) {
+    public Map(ShapeRenderer Renderer, World world, int map_seed, Vehicle vehicle) {
         this.renderer = Renderer;
         this.world = world;
         this.noiseGenerator = new FastNoiseLite(map_seed);
         noiseGenerator.SetFrequency((float) 0.1);
         createGroundAndWall();
+
+        this.world.setContactListener(new BeerContactListener());
+        Beer beer = new Beer(world, "2");
+        VehicleCollisionBox vcb = new VehicleCollisionBox(world, "3", vehicle);
     }
 
     private void createGroundAndWall() {
