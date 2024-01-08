@@ -14,8 +14,8 @@ import fastnoiseLite.*;
 
 public class Map {
     private static final int SEGMENTS = 1000;
-    private static final float SEGMENT_WIDTH = 20f;
-    private static final float CHUNK_SIZE = 1000f;
+    private static final float SEGMENT_WIDTH = 0.3f;
+    private static final float CHUNK_SIZE = 10f;
     //private static final float DRAW_WIDTH = 20000f;
     private static final float AMPLITUDE = 50f;
     private static final float PERIOD = 150f;
@@ -31,7 +31,7 @@ public class Map {
         this.renderer = Renderer;
         this.world = world;
         this.noiseGenerator = new FastNoiseLite(map_seed);
-        noiseGenerator.SetFrequency((float) 0.001);
+        noiseGenerator.SetFrequency((float) 0.1);
         createGroundAndWall();
     }
 
@@ -50,10 +50,10 @@ public class Map {
         //create invisible wall
         BodyDef wallDef = new BodyDef();
         wallDef.type = BodyDef.BodyType.StaticBody; // Static body type
-        wallDef.position.set(500, 0); // Set the initial position (x, y)
+        wallDef.position.set(990, 0); // Set the initial position (x, y)
         Body wallBody = world.createBody(wallDef);
         PolygonShape wallShape = new PolygonShape();
-        wallShape.setAsBox(20, 1000);
+        wallShape.setAsBox(2, 1000);
 
         fixtureDef.shape = wallShape;
         wallBody.createFixture(fixtureDef);
@@ -138,7 +138,7 @@ public class Map {
     }
 
     private float calculatePerlinHeight(float x) {
-        return noiseGenerator.GetNoise(x, 1) * (50 * (float) Math.log(x * 0.01f));
+        return noiseGenerator.GetNoise(x, 1) * (0.5f * (float) Math.log(x * 0.01f));
     }
 
     public void dispose() {

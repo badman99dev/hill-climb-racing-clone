@@ -24,6 +24,7 @@ public class Vehicle extends InputAdapter {
     private WheelJoint leftAxis, rightAxis;
     private final float forwardSpeed;
     private final float backwardSpeed;
+    private boolean rotate_left, rotate_right;
     public Vehicle(World world, float x, float y, float width, float height,
                    float wheelRadius, float suspensionHeight, float wheelOffset,
                    float forwardSpeed, float backwardSpeed) {
@@ -35,7 +36,8 @@ public class Vehicle extends InputAdapter {
         this.wheelOffset = wheelOffset;
         this.forwardSpeed = forwardSpeed;
         this.backwardSpeed = backwardSpeed;
-
+        this.rotate_left = false;
+        this.rotate_right = false;
         createBody(x, y);
         createWheels();
     }
@@ -55,6 +57,7 @@ public class Vehicle extends InputAdapter {
         fixtureDef.density = 1.0f;
 
         body.createFixture(fixtureDef);
+        body.setAngularDamping(5f);
 
         shape.dispose();
     }
@@ -66,7 +69,7 @@ public class Vehicle extends InputAdapter {
         FixtureDef wheelFixtureDef = new FixtureDef();
         wheelFixtureDef.shape = wheelShape;
         wheelFixtureDef.density = 5.0f;
-        wheelFixtureDef.friction = 10f;
+        wheelFixtureDef.friction = 3f;
         wheelFixtureDef.restitution = 0.3f;
 
 
@@ -89,9 +92,9 @@ public class Vehicle extends InputAdapter {
         axisDef.bodyA = body;
         axisDef.bodyB = leftWheel;
         axisDef.localAxisA.set(0, 1);
-        axisDef.frequencyHz = 1.5f;
-        axisDef.dampingRatio = 1f;
-        axisDef.maxMotorTorque = 100000000000f;
+        axisDef.frequencyHz = 3f;
+        axisDef.dampingRatio = 0.9f;
+        axisDef.maxMotorTorque = 0.1f;
         axisDef.localAnchorA.set(leftWheel.getPosition().x - body.getPosition().x, leftWheel.getPosition().y - body.getPosition().y);
         leftAxis = (WheelJoint) world.createJoint(axisDef);
 
@@ -141,12 +144,14 @@ public class Vehicle extends InputAdapter {
                     leftAxis.enableMotor(true);
                     leftAxis.setMotorSpeed(-forwardSpeed);
                 }
+                rotate_left = true;
                 break;
             case Input.Keys.S:
                 if (!leftWheel.isFixedRotation()) {
                     leftAxis.enableMotor(true);
                     leftAxis.setMotorSpeed(backwardSpeed);
-                 }
+                }
+                rotate_right = true;
                 break;
             case Input.Keys.SPACE:
                 leftAxis.enableMotor(false);
@@ -164,8 +169,10 @@ public class Vehicle extends InputAdapter {
                 leftWheel.setFixedRotation(false);
                 rightWheel.setFixedRotation(false);
             case Input.Keys.W:
+                rotate_left = false;
             case Input.Keys.S:
                 leftAxis.enableMotor(false);
+                rotate_right = false;
                 break;
         }
        return true;
@@ -173,6 +180,17 @@ public class Vehicle extends InputAdapter {
 
     public Vector2 getPosition() {
         return body.getPosition();
+    }
+
+    public void update() {
+        if (rotate_left && rotate_right){
+            // do nothing
+        } else if (rotate_right) {
+            body.applyAngularImpulse(-0.005f, true);
+        } else if (rotate_left) {
+            body.applyAngularImpulse(0.005f, true);
+            System.out.println(body.getAngularVelocity());
+        }
     }
 }
 

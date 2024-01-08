@@ -35,8 +35,8 @@ public class PtmPGame extends ScreenAdapter{
 		renderer.setProjectionMatrix(camera.combined);
 		world = new World(new Vector2(0, mapData.gravity), false);
 		map = new Map(renderer, world, mapData.seed);
-		vehicle = new Vehicle(world, 1000f, 300f, 100f, 20f, 10f,
-				20f, 10f, 20f, 15f);
+		vehicle = new Vehicle(world, 1000f, 100f, 1f, 0.2f, 0.1f,
+				0.2f, 0.1f, 40f, 30f);
 		debugRenderer = new Box2DDebugRenderer();
 		spriteBatch = new SpriteBatch();
 		font = new BitmapFont();
@@ -50,10 +50,11 @@ public class PtmPGame extends ScreenAdapter{
 	@Override
 	public void render(float delta) {
 		ScreenUtils.clear(1, 1, 1, 1);
+		vehicle.update();
 		world.step(1/60f, 6, 2);
 
 		camera.position.set(vehicle.getPosition().x, vehicle.getPosition().y, 0);
-		camera.zoom = 0.5f;
+		camera.zoom = 0.005f;
 		camera.update();
 		renderer.setProjectionMatrix(camera.combined);
 
