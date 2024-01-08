@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.joints.WeldJointDef;
 import com.badlogic.gdx.physics.box2d.joints.WheelJoint;
 import com.badlogic.gdx.physics.box2d.joints.WheelJointDef;
 
@@ -25,6 +26,10 @@ public class Vehicle extends InputAdapter {
     private final float forwardSpeed;
     private final float backwardSpeed;
     private boolean rotate_left, rotate_right;
+    private Body collisionBox;
+    private float fuel = 100;
+    private float fuelConsumptionRatio = 10f; // 1 represents 1 unit per second
+    private float jointFrictionForce = 0.005f;
     public Vehicle(World world, float x, float y, float width, float height,
                    float wheelRadius, float suspensionHeight, float wheelOffset,
                    float forwardSpeed, float backwardSpeed) {
@@ -40,6 +45,7 @@ public class Vehicle extends InputAdapter {
         this.rotate_right = false;
         createBody(x, y);
         createWheels();
+        createCollisionBox();
     }
 
     private void createBody(float x, float y) {
@@ -126,28 +132,32 @@ public class Vehicle extends InputAdapter {
 
         shapeRenderer.translate(leftWheel.getPosition().x, leftWheel.getPosition().y, 0);
         shapeRenderer.rotate(0, 0, 1, MathUtils.radiansToDegrees * leftWheel.getAngle());
-        shapeRenderer.circle(0, 0, wheelRadius);
+        shapeRenderer.circle(0, 0, wheelRadius,10);
         shapeRenderer.identity();
 
         shapeRenderer.translate(rightWheel.getPosition().x, rightWheel.getPosition().y, 0);
         shapeRenderer.rotate(0, 0, 1, MathUtils.radiansToDegrees * rightWheel.getAngle());
-        shapeRenderer.circle(0, 0, wheelRadius);
+        shapeRenderer.circle(0, 0, wheelRadius, 10);
         shapeRenderer.identity();
         shapeRenderer.end();
+    }
+
+    public boolean canMove() {
+        return fuel > 0;
     }
 
     @Override
     public boolean keyDown(int keycode) {
         switch(keycode) {
             case Input.Keys.W:
-                if (!leftWheel.isFixedRotation()) {
+                if ((!leftWheel.isFixedRotation()) && canMove()) {
                     leftAxis.enableMotor(true);
                     leftAxis.setMotorSpeed(-forwardSpeed);
                 }
                 rotate_left = true;
                 break;
             case Input.Keys.S:
-                if (!leftWheel.isFixedRotation()) {
+                if ((!leftWheel.isFixedRotation()) && canMove()) {
                     leftAxis.enableMotor(true);
                     leftAxis.setMotorSpeed(backwardSpeed);
                 }
@@ -183,7 +193,13 @@ public class Vehicle extends InputAdapter {
     }
 
     public void update() {
-        if (rotate_left && rotate_right){
+        if (fuel > 0f) {
+            fuel -= 1/60f * fuelConsumptionRatio;
+        } else {
+            fuel = 0f;
+        }
+        System.out.println(fuel);
+        if (rotate_left && rotate_right || !canMove()){
             // do nothing
         } else if (rotate_right) {
             body.applyAngularImpulse(-0.005f, true);
@@ -191,6 +207,59 @@ public class Vehicle extends InputAdapter {
             body.applyAngularImpulse(0.005f, true);
             System.out.println(body.getAngularVelocity());
         }
+
+        // joint friction
+        if (leftWheel.getAngularVelocity() < 0) {
+            leftWheel.applyTorque(jointFrictionForce, true);
+        }
+        if (rightWheel.getAngularVelocity() < 0) {
+            rightWheel.applyTorque(jointFrictionForce, true);
+        }
+        if (leftWheel.getAngularVelocity() > 0) {
+            leftWheel.applyTorque(-jointFrictionForce, true);
+        }
+        if (rightWheel.getAngularVelocity() > 0) {
+            rightWheel.applyTorque(-jointFrictionForce, true);
+        }
+    }
+
+    private void createCollisionBox() {
+        BodyDef boxDef = new BodyDef();
+        float boxCollisionHeight = (height + suspensionHeight + wheelRadius) / 2;
+        float boxCollisionWidth = Math.max(width, width - wheelOffset + wheelRadius);
+        Vector2 center = body.getWorldCenter().sub(
+                new Vector2(0f , boxCollisionHeight/2)
+        );
+
+        boxDef.position.set(center);
+        boxDef.type = BodyDef.BodyType.DynamicBody;
+        boxDef.fixedRotation = false;
+        collisionBox = world.createBody(boxDef);
+
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(boxCollisionWidth / 2, boxCollisionHeight);
+
+        FixtureDef fixDef = new FixtureDef();
+        fixDef.shape = shape;
+        fixDef.density = 0.0000001f;
+        fixDef.friction = 0.0f;
+
+        fixDef.filter.categoryBits = 0;
+        fixDef.filter.maskBits = 0; // collision mask bits (0 - no collision)
+        fixDef.filter.groupIndex = 0;
+
+        collisionBox.createFixture(fixDef);
+
+        WeldJointDef jointDef = new WeldJointDef();
+//        jointDef.bodyA = collisionBox;
+//        jointDef.bodyB = body;
+//        jointDef.collideConnected = false;
+//        jointDef.referenceAngle = 0f;
+        jointDef.initialize(collisionBox, body, boxDef.position);
+        world.createJoint(jointDef);
+
+        shape.dispose();
     }
 }
+
 
