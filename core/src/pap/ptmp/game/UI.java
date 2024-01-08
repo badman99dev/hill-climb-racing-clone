@@ -2,6 +2,7 @@ package pap.ptmp.game;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
@@ -11,17 +12,19 @@ public class UI extends Game{
     private Screen pauseScreen;
     private SpriteBatch batch;
     private BitmapFont font;
+    private AssetManager assetManager;
 
     @Override
     public void create(){
         Assets assets = new Assets();
         assets.loadAll();
-        assets.getAssetManager().finishLoading();
+        assetManager = assets.getAssetManager();
+        assetManager.finishLoading();
         batch = new SpriteBatch();
         font = new BitmapFont();
         //gameScreen = new PtmPGame(this);
-        pauseScreen = new PauseScreen(assets.getAssetManager(), this);
-        mainMenu = new MainMenuScreen(assets.getAssetManager(), this);
+        pauseScreen = new PauseScreen(assetManager, this);
+        mainMenu = new MainMenuScreen(assetManager, this);
         setScreen(mainMenu);
     }
 
@@ -34,7 +37,7 @@ public class UI extends Game{
     }
 
     public void resetGame(MapIO.MapData mapData){
-        this.gameScreen = new PtmPGame(this, mapData);
+        this.gameScreen = new PtmPGame(this, mapData, assetManager);
         this.setGameScreen();
     }
 

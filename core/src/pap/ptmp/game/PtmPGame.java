@@ -1,10 +1,15 @@
 package pap.ptmp.game;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -14,7 +19,12 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
+
+import pap.ptmp.game.MapIO.MapData;
 
 public class PtmPGame extends ScreenAdapter{
 	private Map map;
@@ -29,9 +39,11 @@ public class PtmPGame extends ScreenAdapter{
 	private BitmapFont font;
 	private String fpsText, scoreText, highscoreText;
 	private float highscore, bestposition = 0;
-	private int mapID;
+	private int mapID, money, mapWidth, mapHeight;
+	private Image coinImg;
+	private Viewport viewport;
 
-	public PtmPGame(UI game, MapIO.MapData mapData){
+	public PtmPGame(UI game, MapIO.MapData mapData, AssetManager assetManager){
 		this.game = game;
 		camera = new OrthographicCamera();
 		spriteBatch = new SpriteBatch();
@@ -50,6 +62,24 @@ public class PtmPGame extends ScreenAdapter{
 		font = new BitmapFont();
 		highscore = mapData.high_score;
 		mapID = mapData.id;
+		viewport = new ExtendViewport(1080, 720);
+		coinImg = new Image((Texture)assetManager.get(Assets.COIN_IMAGE));
+		coinImg.setWidth(25);
+		coinImg.setHeight(25);
+		mapWidth = Gdx.graphics.getWidth();
+		mapHeight = Gdx.graphics.getHeight();
+		coinImg.setPosition(mapWidth - 80, mapHeight - 30);
+
+		try {
+            Scanner scanner = new Scanner(new File("./assets/money.txt"));
+			if(scanner.hasNextInt()){
+				money = scanner.nextInt();
+			}
+			scanner.close();
+        } catch (FileNotFoundException e) {
+            System.err.println("File not found: " + e.getMessage());
+		}
+
 	}
 
 	@Override
@@ -77,10 +107,14 @@ public class PtmPGame extends ScreenAdapter{
 		fpsText = "FPS: " + Gdx.graphics.getFramesPerSecond();
 		scoreText = "Score: " + Math.round(bestposition);
 		highscoreText = "Highscore: " + Math.round(highscore);
-		font.draw(spriteBatch, escapeText, 20, Gdx.graphics.getHeight() - 15);
-		font.draw(spriteBatch, fpsText, 20, Gdx.graphics.getHeight() - 30);
-		font.draw(spriteBatch, scoreText, 20, Gdx.graphics.getHeight() - 45);
-		font.draw(spriteBatch, highscoreText, 20, Gdx.graphics.getHeight() - 60);
+		String moneyText = Integer.toString(money);
+
+		coinImg.draw(spriteBatch, 1);
+		font.draw(spriteBatch, moneyText, mapWidth - 50, mapHeight - 12);
+		font.draw(spriteBatch, escapeText, 20, mapHeight - 15);
+		font.draw(spriteBatch, fpsText, 20, mapHeight - 30);
+		font.draw(spriteBatch, scoreText, 20, mapHeight - 45);
+		font.draw(spriteBatch, highscoreText, 20, mapHeight - 60);
 		spriteBatch.end();
 
 		if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
@@ -98,4 +132,9 @@ public class PtmPGame extends ScreenAdapter{
 		font.dispose();
 		renderer.dispose();
 	}
+
+	@Override
+    public void resize(int width, int height) {
+        viewport.update(width, height, true);
+    }
 }
