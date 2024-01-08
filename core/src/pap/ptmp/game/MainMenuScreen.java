@@ -92,4 +92,9 @@ public class MainMenuScreen extends ScreenAdapter{
     public void hide(){
         mainTable.clear();
     }
+
+    @Override
+    public void resize(int width, int height) {
+        viewport.update(width, height, true);
+    }
 }

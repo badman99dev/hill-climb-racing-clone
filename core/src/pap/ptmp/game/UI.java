@@ -49,4 +49,9 @@ public class UI extends Game{
     public BitmapFont getFont() {
         return font;
     }
+
+    @Override
+    public void resize(int width, int height){
+        getScreen().resize(width, height);
+    }
 }

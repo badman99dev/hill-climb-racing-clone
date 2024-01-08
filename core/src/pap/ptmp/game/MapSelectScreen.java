@@ -39,7 +39,7 @@ public class MapSelectScreen extends ScreenAdapter  {
     @Override
     public void show(){
         ArrayList<MapIO.MapData> maps = mapLoader.getMaps();
-        
+
         for (final MapIO.MapData map : maps) {
             addButton(map.name).addListener(new ClickListener(){
                 @Override
@@ -57,7 +57,7 @@ public class MapSelectScreen extends ScreenAdapter  {
         mainTable.add(button).center().width(500).height(90).padBottom(20);
         mainTable.row();
         return button;
-    }    
+    }
 
     @Override
     public void render(float delta){
@@ -69,5 +69,10 @@ public class MapSelectScreen extends ScreenAdapter  {
 
         stage.act();
         stage.draw();
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        viewport.update(width, height, true);
     }
 }

@@ -10,7 +10,7 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setForegroundFPS(60);
-		config.setResizable(false);
+		config.setResizable(true);
 		config.setTitle("Piwo to moje Paliwo");
 		config.setWindowIcon("piwo16.png", "piwo32.png", "piwo64.png");
 		// new Lwjgl3Application(new PtmPGame(), config);
