@@ -10,6 +10,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -42,6 +44,7 @@ public class PtmPGame extends ScreenAdapter{
 	private int mapID, money, mapWidth, mapHeight;
 	private Image coinImg;
 	private Viewport viewport;
+	private Music music_background;
 
 	public PtmPGame(UI game, MapIO.MapData mapData, AssetManager assetManager){
 		this.game = game;
@@ -71,7 +74,7 @@ public class PtmPGame extends ScreenAdapter{
 		coinImg.setPosition(mapWidth - 80, mapHeight - 30);
 
 		try {
-            Scanner scanner = new Scanner(new File("./assets/money.txt"));
+            Scanner scanner = new Scanner(new File("./money.txt"));
 			if(scanner.hasNextInt()){
 				money = scanner.nextInt();
 			}
@@ -80,11 +83,19 @@ public class PtmPGame extends ScreenAdapter{
             System.err.println("File not found: " + e.getMessage());
 		}
 
+		Sound drive = Gdx.audio.newSound((Gdx.files.internal("Drive.mp3")));
+		drive.play();
+
+		this.music_background = Gdx.audio.newMusic(Gdx.files.internal("Nightcall.ogg"));
+		music_background.setVolume(0.1f);
+		music_background.play();
+		music_background.setLooping(true);
 	}
 
 	@Override
 	public void show() {
 		Gdx.input.setInputProcessor(vehicle);
+		music_background.play();
 	}
 
 	@Override
@@ -124,6 +135,10 @@ public class PtmPGame extends ScreenAdapter{
 			game.setPauseScreen();
 		}
 //		debugRenderer.render(world, camera.combined);   //debug renderer works only if map segments <= 1000
+	}
+
+	public void hide () {
+		music_background.pause();
 	}
 
 	@Override
