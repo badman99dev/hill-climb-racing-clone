@@ -15,6 +15,8 @@ public class Assets {
     public static final String PIWO_IMAGE = "piwo.png";
     public static final String SETTINGS_IMAGE = "settings.png";
     public static final String PAUSE_IMAGE = "pause.png";
+    public static final String COIN_IMAGE = "coin.png";
+
 
 
     public void loadAll(){
@@ -25,6 +27,7 @@ public class Assets {
         assetManager.load(PIWO_IMAGE, Texture.class);
         assetManager.load(SETTINGS_IMAGE, Texture.class);
         assetManager.load(PAUSE_IMAGE, Texture.class);
+        assetManager.load(COIN_IMAGE, Texture.class);
     }
 
     public AssetManager getAssetManager(){
