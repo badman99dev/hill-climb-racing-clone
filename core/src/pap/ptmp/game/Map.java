@@ -1,12 +1,10 @@
 package pap.ptmp.game;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
@@ -14,6 +12,7 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import fastnoiseLite.FastNoiseLite;
+import java.util.ArrayList;
 
 public class Map {
     private static final int SEGMENTS = 1000;
@@ -36,9 +35,10 @@ public class Map {
     private int fuelDistance = 50;
     private int fuelDifference = 10; // difference between distances of fuel placement
     private int epsilon = 1;
+    private ArrayList<Vector2> beersPos;
+    private final Texture beerImage;
 
-
-    public Map(ShapeRenderer Renderer, World world, Texture groundTexture, Color skyColor, int map_seed) {
+    public Map(ShapeRenderer Renderer, World world, Texture groundTexture, Texture beerImage, Color skyColor, int map_seed) {
         this.renderer = Renderer;
         this.world = world;
         this.noiseGenerator = new FastNoiseLite(map_seed);
@@ -48,6 +48,8 @@ public class Map {
 
         this.groundTexture = groundTexture;
         this.skyColor = skyColor;
+        this.beerImage = beerImage;
+        this.beersPos = new ArrayList<>();
         createGroundAndWall();
     }
 
@@ -98,6 +100,8 @@ public class Map {
             // put fuel
             if (Math.abs(x1 - fuelX) < epsilon) {
                 putFuel(x1, y1 + 0.5f);
+                //beersPos.add(new Vector2(x1, y1 + 0.5f));
+                beersPos.add(new Vector2(1000f, 100f));
             }
 
         }
@@ -122,13 +126,20 @@ public class Map {
     public void render(OrthographicCamera camera) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
+        System.out.println(camera.position.x);
         spriteBatch.begin();
         spriteBatch.setProjectionMatrix(camera.combined);
         for (int i = 0; i < 20000; i+=5)
             for (int j = 70; j <= 130; j+= 5) {
                 spriteBatch.draw(groundTexture, i, j, 5, 5);
             }
+//        if (!beersPos.isEmpty()) {
+//            for (Vector2 pos : beersPos) {
+//                float x = pos.x;
+//                float y = pos.y;
+//                spriteBatch.draw(beerImage, x - 9f, y - 8f);
+//            }
+//        }
         spriteBatch.end();
 
         renderer.setColor(skyColor);

@@ -1,11 +1,5 @@
 package pap.ptmp.game;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Scanner;
-
-import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
@@ -27,9 +21,10 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import pap.ptmp.game.MapIO.MapData;
-
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class PtmPGame extends ScreenAdapter{
 	private Map map;
@@ -63,7 +58,8 @@ public class PtmPGame extends ScreenAdapter{
 		MapIO tempIO = new MapIO();
 		Texture groundTexture = tempIO.getTexture(mapData.id);
 		Color skyColor = tempIO.getColor(mapData.id);
-		map = new Map(renderer, world, groundTexture, skyColor, mapData.seed);
+		Texture beerImage = assetManager.get(Assets.BEER_FUEL_IMAGE);
+		map = new Map(renderer, world, groundTexture, beerImage, skyColor, mapData.seed);
 		vehicle = new Vehicle(world, 1000f, 100f, 1f, 0.2f, 0.1f,
 				0.2f, 0.1f, 40f, 30f);
 		debugRenderer = new Box2DDebugRenderer();
@@ -151,7 +147,7 @@ public class PtmPGame extends ScreenAdapter{
 			}
 			game.setPauseScreen();
 		}
-//		debugRenderer.render(world, camera.combined);   //debug renderer works only if map segments <= 1000
+		debugRenderer.render(world, camera.combined);   //debug renderer works only if map segments <= 1000
 	}
 
 	public void hide () {

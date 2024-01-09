@@ -19,6 +19,7 @@ public class Assets {
     public static final String MARS_TEXTURE = "mars.jpg";
     public static final String MOON_TEXTURE = "moon.png";
     public static final String COIN_IMAGE = "coin.png";
+    public static final String BEER_FUEL_IMAGE = "piwo32.png";
 
 
 
@@ -34,6 +35,7 @@ public class Assets {
         assetManager.load(MARS_TEXTURE, Texture.class);
         assetManager.load(MOON_TEXTURE, Texture.class);
         assetManager.load(COIN_IMAGE, Texture.class);
+        assetManager.load(BEER_FUEL_IMAGE, Texture.class);
     }
 
     public AssetManager getAssetManager(){
