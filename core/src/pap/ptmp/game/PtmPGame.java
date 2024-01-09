@@ -13,7 +13,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -23,10 +22,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class PtmPGame extends ScreenAdapter{
 	private Map map;
@@ -69,15 +65,16 @@ public class PtmPGame extends ScreenAdapter{
 		Texture beerImage = assetManager.get(Assets.BEER_FUEL_IMAGE);
 		Texture carTexture = assetManager.get(Assets.BEER_FUEL_IMAGE);
 		Texture wheelTexture = assetManager.get(Assets.WHEEL_TEXTURE);
-		map = new Map(renderer, world, groundTexture, beerImage, skyColor, mapData.seed);
+		Texture coinTexture = assetManager.get(Assets.COIN_IMAGE);
+		map = new Map(renderer, world, groundTexture, beerImage, coinTexture, skyColor, mapData.seed);
 		vehicle = new Vehicle(world, 1000f, 100f, 1f, 0.2f, 0.1f,
-				0.2f, 0.1f, 40f, 30f, 10f, 0.005f, carTexture, wheelTexture);
+				0.2f, 0.1f, 40f, 30f, 3f, 0.005f, carTexture, wheelTexture);
 		debugRenderer = new Box2DDebugRenderer();
 		font = new BitmapFont();
 		highscore = mapData.high_score;
 		mapID = mapData.id;
 		viewport = new ExtendViewport(1080, 720);
-		coinImg = new Image((Texture)assetManager.get(Assets.COIN_IMAGE));
+		coinImg = new Image(coinTexture);
 		coinImg.setWidth(25);
 		coinImg.setHeight(25);
 		mapWidth = Gdx.graphics.getWidth();
@@ -92,15 +89,7 @@ public class PtmPGame extends ScreenAdapter{
 		beerImg.setHeight(32);
 		beerImg.setPosition(mapWidth - 90, mapHeight - 65);
 
-		try {
-            Scanner scanner = new Scanner(new File("./money.txt"));
-			if(scanner.hasNextInt()){
-				money = scanner.nextInt();
-			}
-			scanner.close();
-        } catch (FileNotFoundException e) {
-            System.err.println("File not found: " + e.getMessage());
-		}
+		money = 0;
 
 		Sound drive = Gdx.audio.newSound((Gdx.files.internal("Drive.mp3")));
 		drive.play();
@@ -110,7 +99,7 @@ public class PtmPGame extends ScreenAdapter{
 		music_background.play();
 		music_background.setLooping(true);
 
-		myContactListener = new MyContactListener();
+		myContactListener = new MyContactListener(this);
 		world.setContactListener(myContactListener);
 		deletionList = myContactListener.getDeletionList();
 	}
@@ -199,6 +188,10 @@ public class PtmPGame extends ScreenAdapter{
 
 	public void hide () {
 		music_background.pause();
+	}
+
+	public void addMoney(int money) {
+		this.money += money;
 	}
 
 	@Override

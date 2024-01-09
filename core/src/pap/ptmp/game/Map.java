@@ -13,6 +13,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import fastnoiseLite.FastNoiseLite;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Map {
     private static final int SEGMENTS = 1000;
@@ -36,9 +37,19 @@ public class Map {
     private int fuelDifference = 10; // difference between distances of fuel placement
     private int epsilon = 1;
     private ArrayList<Vector2> beersPos;
+    private ArrayList<Vector2> coinsPos;
     private final Texture beerImage;
+    private final Texture coinImage;
+    Random rand;
+    private int coinsCount;
+    private final float coinXStart =1015;
+    private final int minCoins = 4;
+    private final int maxCoins = 8;
+    private final float minDistance = 25;
+    private final float maxDistance = 40;
+    private float currentCoinX = coinXStart;
 
-    public Map(ShapeRenderer Renderer, World world, Texture groundTexture, Texture beerImage, Color skyColor, int map_seed) {
+    public Map(ShapeRenderer Renderer, World world, Texture groundTexture, Texture beerImage, Texture coinImage, Color skyColor, int map_seed) {
         this.renderer = Renderer;
         this.world = world;
         this.noiseGenerator = new FastNoiseLite(map_seed);
@@ -49,7 +60,10 @@ public class Map {
         this.groundTexture = groundTexture;
         this.skyColor = skyColor;
         this.beerImage = beerImage;
+        this.coinImage = coinImage;
         this.beersPos = new ArrayList<>();
+        this.coinsPos = new ArrayList<>();
+        this.rand = new Random(map_seed);
         createGroundAndWall();
     }
 
@@ -103,7 +117,22 @@ public class Map {
                 putFuel(coordinates);
                 beersPos.add(coordinates);
             }
-
+            if (Math.abs(x1 - currentCoinX) < epsilon) {
+                if (Math.abs(currentCoinX - fuelX) < epsilon) {
+                    currentCoinX = fuelX + 0.5f;
+                }
+                if (coinsCount == 0) {
+                    coinsCount = rand.nextInt((maxCoins - minCoins) + 1) + minCoins;
+                }
+                Vector2 coinPos = new Vector2(x1, y1 + 0.5f);
+                Money money = new Money(world, this, coinPos);
+                coinsPos.add(coinPos);
+                coinsCount--;
+                currentCoinX += 0.6f;
+                if (coinsCount == 0) {
+                    currentCoinX += rand.nextFloat(maxDistance - minDistance) + minDistance;
+                }
+            }
         }
 
         ChainShape chainShape = new ChainShape();
@@ -113,8 +142,7 @@ public class Map {
         fixtureDef.shape = chainShape;
         fixtureDef.density = 1.0f;
 
-        //groundBody.createFixture(fixtureDef);
-        Ground ground = new Ground(world, groundBody, fixtureDef); // enables collision
+        groundBody.createFixture(fixtureDef);
         chainShape.dispose();
     }
 
@@ -128,10 +156,13 @@ public class Map {
         beersPos.remove(coordinates);
     }
 
+    public void removeCoin(Vector2 coordinates) {
+        coinsPos.remove(coordinates);
+    }
+
     public void render(OrthographicCamera camera) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        // System.out.println(camera.position.x);
         spriteBatch.begin();
         spriteBatch.setProjectionMatrix(camera.combined);
         for (int i = 0; i < 20000; i+=5)
@@ -173,13 +204,19 @@ public class Map {
             renderer.triangle(x2, y2, x1, BOOTOM_Y_COORD, x2, BOOTOM_Y_COORD);
         }
 
-        if (!beersPos.isEmpty()) {
+        if (!beersPos.isEmpty() || !coinsPos.isEmpty()) {
             float beerScale = 0.018f;
             spriteBatch.begin();
             for (Vector2 pos : beersPos) {
                 float x = pos.x;
                 float y = pos.y;
                 spriteBatch.draw(beerImage, x - 0.29f, y - 0.29f, beerImage.getWidth() * beerScale, beerImage.getHeight() * beerScale);
+            }
+            float coinScale = 0.0005f;
+            for (Vector2 pos : coinsPos) {
+                float x = pos.x;
+                float y = pos.y;
+                spriteBatch.draw(coinImage, x - 0.12f, y - 0.12f, coinImage.getWidth() * coinScale, coinImage.getHeight() * coinScale);
             }
             spriteBatch.end();
         }
