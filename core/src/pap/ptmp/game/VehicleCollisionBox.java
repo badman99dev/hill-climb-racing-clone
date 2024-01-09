@@ -8,8 +8,7 @@ public class VehicleCollisionBox {
     public Body body;
     public String id;
     public Vehicle vehicle;
-    public VehicleCollisionBox(World world, String id, Vehicle vehicle) {
-        this.id = id;
+    public VehicleCollisionBox(World world, Vehicle vehicle) {
         this.vehicle = vehicle;
         createBoxBody(world);
     }
@@ -31,8 +30,6 @@ public class VehicleCollisionBox {
         fixDef.density = 0.0000001f;
         fixDef.friction = 0.0f;
 
-        //fixDef.filter.maskBits = 2; // for no collision
-
         body.createFixture(fixDef).setUserData(this);
 
         WeldJointDef jointDef = new WeldJointDef();
@@ -41,9 +38,5 @@ public class VehicleCollisionBox {
         world.createJoint(jointDef);
 
         shape.dispose();
-    }
-
-    public void hit() {
-        System.out.println("i've been hit");
     }
 }

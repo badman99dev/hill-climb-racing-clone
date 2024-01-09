@@ -2,8 +2,10 @@ package pap.ptmp.game;
 
 import com.badlogic.gdx.physics.box2d.*;
 
-public class BeerContactListener implements ContactListener {
+import java.util.ArrayList;
 
+public class BeerContactListener implements ContactListener {
+    ArrayList<Body> deletionList = new ArrayList<Body>();
     @Override
     public void beginContact(Contact contact) {
         Fixture fa = contact.getFixtureA();
@@ -12,7 +14,16 @@ public class BeerContactListener implements ContactListener {
         if(fa == null || fb == null) return;
         if(fa.getUserData() == null || fb.getUserData() == null) return;
 
-        System.out.println("A collision happened");
+        if (isBeerContact(fa, fb)) {
+            if (fa.getUserData() instanceof Beer) {
+                deletionList.add(((Beer) fa.getUserData()).body);
+                ((VehicleCollisionBox) fb.getUserData()).vehicle.refill();
+            } else {
+                deletionList.add(((Beer) fb.getUserData()).body);
+                ((VehicleCollisionBox) fa.getUserData()).vehicle.refill();
+            }
+
+        }
     }
 
     @Override
@@ -26,5 +37,14 @@ public class BeerContactListener implements ContactListener {
 
     @Override
     public void postSolve(Contact contact, ContactImpulse impulse) {
+    }
+
+    private boolean isBeerContact(Fixture a, Fixture b) {
+        return (a.getUserData() instanceof Beer && b.getUserData() instanceof VehicleCollisionBox) ||
+                (a.getUserData() instanceof VehicleCollisionBox && b.getUserData() instanceof Beer);
+    }
+
+    public ArrayList<Body> getDeletionList() {
+        return  deletionList;
     }
 }

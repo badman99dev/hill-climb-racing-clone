@@ -22,6 +22,10 @@ public class Map {
     private final FastNoiseLite noiseGenerator;
     private Body groundBody;
     private int currentChunk;
+    private int fuelX = 1050;
+    private int fuelDistance = 50;
+    private int fuelDifference = 10; // difference between distances of fuel placement
+    private int epsilon = 1;
 
     public Map(ShapeRenderer Renderer, World world, int map_seed, Vehicle vehicle) {
         this.renderer = Renderer;
@@ -29,10 +33,6 @@ public class Map {
         this.noiseGenerator = new FastNoiseLite(map_seed);
         noiseGenerator.SetFrequency((float) 0.1);
         createGroundAndWall();
-
-        this.world.setContactListener(new BeerContactListener());
-        Beer beer = new Beer(world, "2");
-        VehicleCollisionBox vcb = new VehicleCollisionBox(world, "3", vehicle);
     }
 
     private void createGroundAndWall() {
@@ -78,6 +78,12 @@ public class Map {
             float x1 = i * SEGMENT_WIDTH;
             float y1 = calculatePerlinHeight(x1) + VERTICAL_OFFSET;
             vertices[i - segmentStart] = new Vector2(x1, y1);
+
+            // put fuel
+            if (Math.abs(x1 - fuelX) < epsilon) {
+                putFuel(x1, y1 + 0.5f);
+            }
+
         }
 
         ChainShape chainShape = new ChainShape();
@@ -91,6 +97,12 @@ public class Map {
         chainShape.dispose();
     }
 
+    public void putFuel(float x, float y) {
+        fuelX += fuelDistance;
+        fuelDistance += fuelDifference;
+        Beer beer = new Beer(world, x, y);
+    }
+
     public void render(OrthographicCamera camera) {
         renderer.setColor(Color.GREEN);
         renderer.begin(ShapeRenderer.ShapeType.Filled);
@@ -98,9 +110,9 @@ public class Map {
         // Don't update the ground shape every frame
         // because the performance goes down.
         int newChunk = (int)(camera.position.x / CHUNK_SIZE);
+
         if (newChunk != currentChunk)
         {
-            //System.out.println("CHUNK: " + newChunk);
             createGround((float)newChunk * CHUNK_SIZE);
             currentChunk = newChunk;
         }

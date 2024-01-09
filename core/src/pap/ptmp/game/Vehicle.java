@@ -27,7 +27,7 @@ public class Vehicle extends InputAdapter {
     private boolean rotate_left, rotate_right;
     private Body collisionBox;
     private float fuel = 100;
-    private float fuelConsumptionRatio = 10f; // 1 represents 1 unit per second
+    private float fuelConsumptionRatio = 2f; // 1 represents 1 unit per second
     private float jointFrictionForce = 0.005f;
     public Vehicle(World world, float x, float y, float width, float height,
                    float wheelRadius, float suspensionHeight, float wheelOffset,
@@ -44,7 +44,6 @@ public class Vehicle extends InputAdapter {
         this.rotate_right = false;
         createBody(x, y);
         createWheels();
-        //createCollisionBox();
     }
 
     private void createBody(float x, float y) {
@@ -236,10 +235,16 @@ public class Vehicle extends InputAdapter {
 
     public Vector2 getCenter() {
         float boxCollisionHeight = getBoxCollisionHeight();
-        //float boxCollisionWidth = getBoxCollisionWidth();
         return body.getWorldCenter().sub(new Vector2(0f , boxCollisionHeight/2));
     }
 
+    public void refill() {
+        fuel = 100;
+    }
+
+    public float getFuelLevel() {
+        return fuel;
+    }
 }
 
 
