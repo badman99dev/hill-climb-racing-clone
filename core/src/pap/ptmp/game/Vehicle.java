@@ -23,7 +23,8 @@ public class Vehicle extends InputAdapter {
     private final float height;
     private final float wheelRadius;
     private final float suspensionHeight;
-    private final float wheelOffset;
+    private final float leftOffset;
+    private final float rightOffset;
     private WheelJoint leftAxis, rightAxis;
     private final float forwardSpeed;
     private final float backwardSpeed;
@@ -36,7 +37,7 @@ public class Vehicle extends InputAdapter {
     private final float jointFrictionForce;
 
     public Vehicle(World world, float x, float y, float width, float height,
-                   float wheelRadius, float suspensionHeight, float wheelOffset,
+                   float wheelRadius, float suspensionHeight, float leftOffset, float rightOffset,
                    float forwardSpeed, float backwardSpeed, float fuelConsumptionRatio,
                    float jointFrictionForce, Texture carTexture, Texture wheelTexture) {
         this.world = world;
@@ -44,7 +45,8 @@ public class Vehicle extends InputAdapter {
         this.height = height;
         this.wheelRadius = wheelRadius;
         this.suspensionHeight = suspensionHeight;
-        this.wheelOffset = wheelOffset;
+        this.leftOffset = leftOffset;
+        this.rightOffset = rightOffset;
         this.forwardSpeed = forwardSpeed;
         this.backwardSpeed = backwardSpeed;
         this.rotate_left = false;
@@ -93,14 +95,14 @@ public class Vehicle extends InputAdapter {
         // Left wheel
         BodyDef leftWheelDef = new BodyDef();
         leftWheelDef.type = BodyDef.BodyType.DynamicBody;
-        leftWheelDef.position.set(body.getPosition().x - width / 2 + wheelOffset, body.getPosition().y - height / 2 - suspensionHeight);
+        leftWheelDef.position.set(body.getPosition().x - width / 2 + leftOffset, body.getPosition().y - height / 2 - suspensionHeight);
         leftWheel = world.createBody(leftWheelDef);
         leftWheel.createFixture(wheelFixtureDef);
 
         // Right wheel
         BodyDef rightWheelDef = new BodyDef();
         rightWheelDef.type = BodyDef.BodyType.DynamicBody;
-        rightWheelDef.position.set(body.getPosition().x + width / 2 - wheelOffset, body.getPosition().y - height / 2 - suspensionHeight);
+        rightWheelDef.position.set(body.getPosition().x + width / 2 - rightOffset, body.getPosition().y - height / 2 - suspensionHeight);
         rightWheel = world.createBody(rightWheelDef);
         rightWheel.createFixture(wheelFixtureDef);
 
@@ -128,8 +130,8 @@ public class Vehicle extends InputAdapter {
         float bodyX = body.getPosition().x;
         float bodyY = body.getPosition().y;
 
-        float relativeX = -width / 2 - 0.25f;
-        float relativeY = -height / 2 - 0.1f;
+        float relativeX = -width / 2 - 0.12f;
+        float relativeY = -height / 2 - 0.12f;
 
         float rotatedX = (float) (bodyX + Math.cos(bodyAngle) * relativeX - Math.sin(bodyAngle) * relativeY);
         float rotatedY = (float) (bodyY + Math.sin(bodyAngle) * relativeX + Math.cos(bodyAngle) * relativeY);
@@ -138,8 +140,8 @@ public class Vehicle extends InputAdapter {
         SpriteBatch spriteBatch = new SpriteBatch();
         spriteBatch.begin();
         spriteBatch.setProjectionMatrix(camera.combined);
-        spriteBatch.draw(carTexture, rotatedX, rotatedY, 0f, 0f, 1.5f, 1.5f, 1f,
-                1f, rotation, 0, 0, carTexture.getWidth(), carTexture.getHeight(), false, false);
+        spriteBatch.draw(carTexture, rotatedX, rotatedY, 0f, 0f, 1.44f, 0.7f, 1f,
+                1f, rotation, 0, 0, carTexture.getWidth(), carTexture.getHeight(), true, false);
 
         float wheelX = leftWheel.getPosition().x;
         float wheelY = leftWheel.getPosition().y;
@@ -252,7 +254,7 @@ public class Vehicle extends InputAdapter {
     }
 
     public float getBoxCollisionWidth() {
-        return Math.max(width, width - wheelOffset + wheelRadius);
+        return Math.max(width, width - rightOffset + wheelRadius);
     }
 
 
