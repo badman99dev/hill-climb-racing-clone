@@ -19,6 +19,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -27,6 +28,8 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import pap.ptmp.game.MapIO.MapData;
+
+import java.util.ArrayList;
 
 public class PtmPGame extends ScreenAdapter{
 	private Map map;
@@ -45,6 +48,8 @@ public class PtmPGame extends ScreenAdapter{
 	private Image coinImg;
 	private Viewport viewport;
 	private Music music_background;
+	private BeerContactListener beerContactListener;
+	private ArrayList<Body> deletionList;
 
 	public PtmPGame(UI game, MapIO.MapData mapData, AssetManager assetManager){
 		this.game = game;
@@ -90,6 +95,11 @@ public class PtmPGame extends ScreenAdapter{
 		music_background.setVolume(0.1f);
 		music_background.play();
 		music_background.setLooping(true);
+
+		beerContactListener = new BeerContactListener();
+		world.setContactListener(beerContactListener);
+		deletionList = beerContactListener.getDeletionList();
+        VehicleCollisionBox vcb = new VehicleCollisionBox(world, vehicle);
 	}
 
 	@Override
@@ -103,6 +113,13 @@ public class PtmPGame extends ScreenAdapter{
 		ScreenUtils.clear(1, 1, 1, 1);
 		vehicle.update();
 		world.step(1/60f, 6, 2);
+
+		if(!deletionList.isEmpty()) {
+			for (Body body : deletionList) {
+				world.destroyBody(body);
+			}
+			deletionList.clear();
+		}
 
 		camera.position.set(vehicle.getPosition().x, vehicle.getPosition().y, 0);
 		camera.zoom = 0.005f;

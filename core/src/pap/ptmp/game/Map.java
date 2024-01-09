@@ -9,12 +9,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import fastnoiseLite.*;
+import fastnoiseLite.FastNoiseLite;
 
 public class Map {
     private static final int SEGMENTS = 1000;
@@ -33,6 +32,10 @@ public class Map {
     private final SpriteBatch spriteBatch;
     private final Texture groundTexture;
     private final Color skyColor;
+    private int fuelX = 1050;
+    private int fuelDistance = 50;
+    private int fuelDifference = 10; // difference between distances of fuel placement
+    private int epsilon = 1;
 
 
     public Map(ShapeRenderer Renderer, World world, Texture groundTexture, Color skyColor, int map_seed) {
@@ -91,6 +94,12 @@ public class Map {
             float x1 = i * SEGMENT_WIDTH;
             float y1 = calculatePerlinHeight(x1) + VERTICAL_OFFSET;
             vertices[i - segmentStart] = new Vector2(x1, y1);
+
+            // put fuel
+            if (Math.abs(x1 - fuelX) < epsilon) {
+                putFuel(x1, y1 + 0.5f);
+            }
+
         }
 
         ChainShape chainShape = new ChainShape();
@@ -102,6 +111,12 @@ public class Map {
 
         groundBody.createFixture(fixtureDef);
         chainShape.dispose();
+    }
+
+    public void putFuel(float x, float y) {
+        fuelX += fuelDistance;
+        fuelDistance += fuelDifference;
+        Beer beer = new Beer(world, x, y);
     }
 
     public void render(OrthographicCamera camera) {

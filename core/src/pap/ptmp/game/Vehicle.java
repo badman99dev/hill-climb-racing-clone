@@ -25,6 +25,10 @@ public class Vehicle extends InputAdapter {
     private final float forwardSpeed;
     private final float backwardSpeed;
     private boolean rotate_left, rotate_right;
+    private Body collisionBox;
+    private float fuel = 100;
+    private float fuelConsumptionRatio = 2f; // 1 represents 1 unit per second
+    private float jointFrictionForce = 0.005f;
     public Vehicle(World world, float x, float y, float width, float height,
                    float wheelRadius, float suspensionHeight, float wheelOffset,
                    float forwardSpeed, float backwardSpeed) {
@@ -136,18 +140,22 @@ public class Vehicle extends InputAdapter {
         shapeRenderer.end();
     }
 
+    public boolean canMove() {
+        return fuel > 0;
+    }
+
     @Override
     public boolean keyDown(int keycode) {
         switch(keycode) {
             case Input.Keys.W:
-                if (!leftWheel.isFixedRotation()) {
+                if ((!leftWheel.isFixedRotation()) && canMove()) {
                     leftAxis.enableMotor(true);
                     leftAxis.setMotorSpeed(-forwardSpeed);
                 }
                 rotate_left = true;
                 break;
             case Input.Keys.S:
-                if (!leftWheel.isFixedRotation()) {
+                if ((!leftWheel.isFixedRotation()) && canMove()) {
                     leftAxis.enableMotor(true);
                     leftAxis.setMotorSpeed(backwardSpeed);
                 }
@@ -183,13 +191,60 @@ public class Vehicle extends InputAdapter {
     }
 
     public void update() {
-        if (rotate_left && rotate_right){
+        if (fuel > 0f) {
+            fuel -= 1/60f * fuelConsumptionRatio;
+        } else {
+            fuel = 0f;
+        }
+        //System.out.println(fuel);
+        if (rotate_left && rotate_right || !canMove()){
             // do nothing
         } else if (rotate_right) {
             body.applyAngularImpulse(-0.005f, true);
         } else if (rotate_left) {
             body.applyAngularImpulse(0.005f, true);
+            //System.out.println(body.getAngularVelocity());
+        }
+
+        // joint friction
+        if (leftWheel.getAngularVelocity() < 0) {
+            leftWheel.applyTorque(jointFrictionForce, true);
+        }
+        if (rightWheel.getAngularVelocity() < 0) {
+            rightWheel.applyTorque(jointFrictionForce, true);
+        }
+        if (leftWheel.getAngularVelocity() > 0) {
+            leftWheel.applyTorque(-jointFrictionForce, true);
+        }
+        if (rightWheel.getAngularVelocity() > 0) {
+            rightWheel.applyTorque(-jointFrictionForce, true);
         }
     }
+    public Body getBody() {
+        return body;
+    }
+
+    public float getBoxCollisionHeight() {
+        return (height + suspensionHeight + wheelRadius) / 2;
+    }
+
+    public float getBoxCollisionWidth() {
+        return Math.max(width, width - wheelOffset + wheelRadius);
+    }
+
+
+    public Vector2 getCenter() {
+        float boxCollisionHeight = getBoxCollisionHeight();
+        return body.getWorldCenter().sub(new Vector2(0f , boxCollisionHeight/2));
+    }
+
+    public void refill() {
+        fuel = 100;
+    }
+
+    public float getFuelLevel() {
+        return fuel;
+    }
 }
+
 
