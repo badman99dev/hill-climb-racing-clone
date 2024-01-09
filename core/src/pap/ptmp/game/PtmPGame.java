@@ -6,6 +6,7 @@ import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -21,7 +22,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-
 import java.util.ArrayList;
 
 public class PtmPGame extends ScreenAdapter{
@@ -83,13 +83,12 @@ public class PtmPGame extends ScreenAdapter{
 		isGameOver = false;
 		gameOverCount = initialGameOverCount;
 
-
 		beerImg = new Image((Texture)assetManager.get(Assets.PIWO_IMAGE));
 		beerImg.setWidth(14);
 		beerImg.setHeight(32);
 		beerImg.setPosition(mapWidth - 90, mapHeight - 65);
 
-		money = 0;
+		money = loadMoney((Gdx.files.internal("money.txt")));
 
 		Sound drive = Gdx.audio.newSound((Gdx.files.internal("Drive.mp3")));
 		drive.play();
@@ -180,7 +179,9 @@ public class PtmPGame extends ScreenAdapter{
 
 		isGameOver = updateIsGameOver();
 		if (isGameOver){
+			saveMoney(Gdx.files.local("money.txt"), money);
 			game.setScreen(new GameOverScreen(this.assetManager, game, bestposition, highscore));
+
 		}
 //		System.out.println(isGameOver);
 //		System.out.println(vehicle.getFuelLevel());
@@ -192,6 +193,24 @@ public class PtmPGame extends ScreenAdapter{
 
 	public void addMoney(int money) {
 		this.money += money;
+	}
+
+	public int loadMoney(FileHandle fileHandle){
+		int money = 0;
+		if (fileHandle.exists()) {
+            String content = fileHandle.readString();
+            try {
+                money = Integer.parseInt(content);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+		return money;
+	}
+
+	public void saveMoney(FileHandle fileHandle, int money){
+		String moneyText = Integer.toString(money);
+		fileHandle.writeString(moneyText, false);
 	}
 
 	@Override
