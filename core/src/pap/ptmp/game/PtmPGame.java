@@ -51,6 +51,7 @@ public class PtmPGame extends ScreenAdapter{
 	private boolean isGameOver;
 	private int initialGameOverCount = 420; // 60 - 1 second (60fps)
 	private int gameOverCount = initialGameOverCount; // if reaches 0 game is over;
+	private AssetManager assetManager;
 
 
 	public PtmPGame(UI game, MapIO.MapData mapData, AssetManager assetManager){
@@ -61,7 +62,7 @@ public class PtmPGame extends ScreenAdapter{
 		renderer = new ShapeRenderer();
 		renderer.setProjectionMatrix(camera.combined);
 		world = new World(new Vector2(0, mapData.gravity), false);
-
+		this.assetManager = assetManager;
 		MapIO tempIO = new MapIO();
 		Texture groundTexture = tempIO.getTexture(mapData.id);
 		Color skyColor = tempIO.getColor(mapData.id);
@@ -189,6 +190,9 @@ public class PtmPGame extends ScreenAdapter{
 		debugRenderer.render(world, camera.combined);   //debug renderer works only if map segments <= 1000
 
 		isGameOver = updateIsGameOver();
+		if (isGameOver){
+			game.setScreen(new GameOverScreen(this.assetManager, game, bestposition, highscore));
+		}
 		System.out.println(isGameOver);
 		System.out.println(vehicle.getFuelLevel());
 	}
