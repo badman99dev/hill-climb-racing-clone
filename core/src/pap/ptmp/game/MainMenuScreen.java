@@ -50,7 +50,6 @@ public class MainMenuScreen extends ScreenAdapter{
                 game.setScreen(new ControlScreen(assetManager, game, false));
             }
         });
-        addButton("Opcje");
         addButton("Wyjscie").addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y){

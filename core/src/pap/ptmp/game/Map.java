@@ -19,7 +19,6 @@ public class Map {
     private static final int SEGMENTS = 1000;
     private static final float SEGMENT_WIDTH = 0.3f;
     private static final float CHUNK_SIZE = 10f;
-    //private static final float DRAW_WIDTH = 20000f;
     private static final float AMPLITUDE = 50f;
     private static final float PERIOD = 150f;
     private static final float VERTICAL_OFFSET = 100f;
@@ -82,7 +81,7 @@ public class Map {
         //create invisible wall
         BodyDef wallDef = new BodyDef();
         wallDef.type = BodyDef.BodyType.StaticBody; // Static body type
-        wallDef.position.set(990, 0); // Set the initial position (x, y)
+        wallDef.position.set(990, 0); // Set the position (x, y)
         Body wallBody = world.createBody(wallDef);
         PolygonShape wallShape = new PolygonShape();
         wallShape.setAsBox(2, 1000);
@@ -164,14 +163,6 @@ public class Map {
     public void render(OrthographicCamera camera) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        spriteBatch.begin();
-        spriteBatch.setProjectionMatrix(camera.combined);
-        for (int i = 0; i < 20000; i+=5)
-            for (int j = 70; j <= 130; j+= 5) {
-                spriteBatch.draw(groundTexture, i, j, 5, 5);
-            }
-
-        spriteBatch.end();
 
         renderer.setColor(skyColor);
         renderer.begin(ShapeRenderer.ShapeType.Filled);
@@ -190,6 +181,17 @@ public class Map {
         //
         float minX = camera.position.x - 0.25f * camera.viewportWidth;
         float maxX = camera.position.x + 0.25f * camera.viewportWidth;
+
+        int startTexture = (int) minX - ((int) minX % 5);
+        int stopTexture = (int) maxX - ((int) maxX % 5) + 5;
+        spriteBatch.begin();
+        spriteBatch.setProjectionMatrix(camera.combined);
+        for (int i = startTexture; i < stopTexture; i+=5)
+            for (int j = 70; j <= 130; j+= 5) {
+                spriteBatch.draw(groundTexture, i, j, 5, 5);
+            }
+
+        spriteBatch.end();
 
         int segmentStart = (int)Math.floor((double)(minX / SEGMENT_WIDTH));
         int segmentEnd = (int)Math.ceil((double)(maxX / SEGMENT_WIDTH));

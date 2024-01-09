@@ -45,7 +45,7 @@ public class PtmPGame extends ScreenAdapter{
 	private MyContactListener myContactListener;
 	private ArrayList<Body> deletionList;
 	private boolean isGameOver;
-	private int initialGameOverCount = 420; // 60 - 1 second (60fps)
+	private int initialGameOverCount = 180; // 60 - 1 second (60fps)
 	private int gameOverCount = initialGameOverCount; // if reaches 0 game is over;
 	private AssetManager assetManager;
 
@@ -176,7 +176,7 @@ public class PtmPGame extends ScreenAdapter{
 			}
 			game.setPauseScreen();
 		}
-		debugRenderer.render(world, camera.combined);   //debug renderer works only if map segments <= 1000
+//		debugRenderer.render(world, camera.combined);   //debug renderer works only if map segments <= 1000
 
 		isGameOver = updateIsGameOver();
 		if (isGameOver){

@@ -47,12 +47,6 @@ public class GameOverScreen extends ScreenAdapter {
         mainTable.add(addImageLabel(imageTexture, 90, 90, "Koniec gry")).row();
         mainTable.add(addLabel("Wynik: " + Integer.toString(Math.round(score)))).row();
         mainTable.add(addLabel("Highscore: " + Integer.toString(Math.round(highscore)))).row();
-        // Label scoreText = new Label("Wynik: " + Float.toString(score), skin);
-        // scoreText.setFontScale(2);
-        // mainTable.add(scoreText).row();
-        // Label highscoreText = new Label("Highscore: " + Float.toString(highscore), skin);
-        // highscoreText.setFontScale(2);
-        // mainTable.add(highscoreText).row();
 
 
         addButton("Powrot do menu").addListener(new ClickListener(){
