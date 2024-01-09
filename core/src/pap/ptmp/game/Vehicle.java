@@ -201,6 +201,7 @@ public class Vehicle extends InputAdapter {
             fuel -= 1/60f * fuelConsumptionRatio;
         } else {
             fuel = 0f;
+            leftAxis.enableMotor(false);
         }
         //System.out.println(fuel);
         if (rotate_left && rotate_right || !canMove()){
