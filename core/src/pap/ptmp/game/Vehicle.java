@@ -34,12 +34,11 @@ public class Vehicle extends InputAdapter {
     private float fuel = 100;
     private final float fuelConsumptionRatio; // 1 represents 1 unit per second
     private final float jointFrictionForce;
-    private float fuelConsumptionRatio = 2f; // 1 represents 1 unit per second
-    private float jointFrictionForce = 0.005f;
 
     public Vehicle(World world, float x, float y, float width, float height,
                    float wheelRadius, float suspensionHeight, float wheelOffset,
-                   float forwardSpeed, float backwardSpeed, Texture carTexture, Texture wheelTexture) {
+                   float forwardSpeed, float backwardSpeed, float fuelConsumptionRatio,
+                   float jointFrictionForce, Texture carTexture, Texture wheelTexture) {
         this.world = world;
         this.width = width;
         this.height = height;
@@ -50,6 +49,8 @@ public class Vehicle extends InputAdapter {
         this.backwardSpeed = backwardSpeed;
         this.rotate_left = false;
         this.rotate_right = false;
+        this.fuelConsumptionRatio = fuelConsumptionRatio;
+        this.jointFrictionForce = jointFrictionForce;
         this.carTexture = carTexture;
         this.wheelTexture = wheelTexture;
         createBody(x, y);
