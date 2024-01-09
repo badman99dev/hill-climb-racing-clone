@@ -1,15 +1,25 @@
 package pap.ptmp.game;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-
 public class Beer {
     public Body body;
     public String id;
-    public Beer(World world, float x, float y) {
-        createBoxBody(world, x, y);
+    private World world;
+    private float x, y;
+    private Map map;
+    private Vector2 coords;
+    public Beer(World world, Map map, Vector2 coordinates) {
+        this.world = world;
+        this.map = map;
+        this.coords = coordinates;
+        createBoxBody(coordinates.x, coordinates.y);
     }
 
-    private void createBoxBody(World world, float x, float y) {
+    private void createBoxBody(float x, float y) {
         BodyDef bdef = new BodyDef();
         bdef.type = BodyDef.BodyType.StaticBody;
         bdef.position.set(x, y);
@@ -24,5 +34,13 @@ public class Beer {
 
         this.body = world.createBody(bdef);
         body.createFixture(fixDef).setUserData(this);
+    }
+
+    public void removeRender() {
+        map.removeBeer(coords);
+    }
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
     }
 }

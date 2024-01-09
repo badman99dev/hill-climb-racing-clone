@@ -99,8 +99,9 @@ public class Map {
 
             // put fuel
             if (Math.abs(x1 - fuelX) < epsilon) {
-                putFuel(x1, y1 + 0.5f);
-                beersPos.add(new Vector2(x1, y1 + 0.5f));
+                Vector2 coordinates = new Vector2(x1, y1 + 0.5f);
+                putFuel(coordinates);
+                beersPos.add(coordinates);
             }
 
         }
@@ -116,10 +117,14 @@ public class Map {
         chainShape.dispose();
     }
 
-    public void putFuel(float x, float y) {
+    public void putFuel(Vector2 coordinates) {
         fuelX += fuelDistance;
         fuelDistance += fuelDifference;
-        Beer beer = new Beer(world, x, y);
+        Beer beer = new Beer(world, this,  coordinates);
+    }
+
+    public void removeBeer(Vector2 coordinates) {
+        beersPos.remove(coordinates);
     }
 
     public void render(OrthographicCamera camera) {

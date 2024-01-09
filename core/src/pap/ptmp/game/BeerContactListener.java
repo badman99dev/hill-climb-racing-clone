@@ -17,9 +17,11 @@ public class BeerContactListener implements ContactListener {
         if (isBeerContact(fa, fb)) {
             if (fa.getUserData() instanceof Beer) {
                 deletionList.add(((Beer) fa.getUserData()).body);
+                ((Beer) fa.getUserData()).removeRender();
                 ((VehicleCollisionBox) fb.getUserData()).vehicle.refill();
             } else {
                 deletionList.add(((Beer) fb.getUserData()).body);
+                ((Beer) fb.getUserData()).removeRender();
                 ((VehicleCollisionBox) fa.getUserData()).vehicle.refill();
             }
 
