@@ -142,6 +142,7 @@ public class Map {
         fixtureDef.shape = chainShape;
         fixtureDef.density = 1.0f;
 
+        Ground ground = new Ground(world, groundBody, fixtureDef);
         groundBody.createFixture(fixtureDef);
         chainShape.dispose();
     }

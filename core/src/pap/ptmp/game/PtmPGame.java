@@ -182,8 +182,8 @@ public class PtmPGame extends ScreenAdapter{
 		if (isGameOver){
 			game.setScreen(new GameOverScreen(this.assetManager, game, bestposition, highscore));
 		}
-		System.out.println(isGameOver);
-		System.out.println(vehicle.getFuelLevel());
+//		System.out.println(isGameOver);
+//		System.out.println(vehicle.getFuelLevel());
 	}
 
 	public void hide () {
@@ -209,7 +209,7 @@ public class PtmPGame extends ScreenAdapter{
 	private boolean updateIsGameOver() {
 		float fuelLevel = vehicle.getFuelLevel();
 		int currentRoofCollisions = myContactListener.getCurrentRoofCollisions();
-
+		//System.out.println(currentRoofCollisions);
 		if(fuelLevel == 0 || currentRoofCollisions > 0) {
 			if(gameOverCount == 0) {
 				return true;
