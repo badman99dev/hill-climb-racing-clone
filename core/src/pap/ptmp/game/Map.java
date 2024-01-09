@@ -13,6 +13,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import fastnoiseLite.FastNoiseLite;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Map {
     private static final int SEGMENTS = 1000;
@@ -39,6 +40,14 @@ public class Map {
     private ArrayList<Vector2> coinsPos;
     private final Texture beerImage;
     private final Texture coinImage;
+    Random rand;
+    private int coinsCount;
+    private final float coinXStart =1015;
+    private final int minCoins = 4;
+    private final int maxCoins = 8;
+    private final float minDistance = 25;
+    private final float maxDistance = 40;
+    private float currentCoinX = coinXStart;
 
     public Map(ShapeRenderer Renderer, World world, Texture groundTexture, Texture beerImage, Texture coinImage, Color skyColor, int map_seed) {
         this.renderer = Renderer;
@@ -54,6 +63,7 @@ public class Map {
         this.coinImage = coinImage;
         this.beersPos = new ArrayList<>();
         this.coinsPos = new ArrayList<>();
+        this.rand = new Random(map_seed);
         createGroundAndWall();
     }
 
@@ -106,16 +116,20 @@ public class Map {
                 Vector2 coordinates = new Vector2(x1, y1 + 0.5f);
                 putFuel(coordinates);
                 beersPos.add(coordinates);
-
-                for (int j = i + 3; j < i + 18; j += 3) {
-                    float coinX = j * SEGMENT_WIDTH;
-                    float coinY = calculatePerlinHeight(coinX) + VERTICAL_OFFSET + 0.5f;
-                    Vector2 coinPos = new Vector2(coinX, coinY);
-                    Money money = new Money(world, this, coinPos);
-                    coinsPos.add(coinPos);
+            }
+            if (Math.abs(x1 - currentCoinX) < epsilon) {
+                if (coinsCount == 0) {
+                    coinsCount = rand.nextInt((maxCoins - minCoins) + 1) + minCoins;
+                }
+                Vector2 coinPos = new Vector2(x1, y1 + 0.5f);
+                Money money = new Money(world, this, coinPos);
+                coinsPos.add(coinPos);
+                coinsCount--;
+                currentCoinX += 0.6f;
+                if (coinsCount == 0) {
+                    currentCoinX += rand.nextFloat(maxDistance - minDistance) + minDistance;
                 }
             }
-
         }
 
         ChainShape chainShape = new ChainShape();

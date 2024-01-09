@@ -13,7 +13,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -71,7 +70,7 @@ public class PtmPGame extends ScreenAdapter{
 		Texture coinTexture = assetManager.get(Assets.COIN_IMAGE);
 		map = new Map(renderer, world, groundTexture, beerImage, coinTexture, skyColor, mapData.seed);
 		vehicle = new Vehicle(world, 1000f, 100f, 1f, 0.2f, 0.1f,
-				0.2f, 0.1f, 40f, 30f, 10f, 0.005f, carTexture, wheelTexture);
+				0.2f, 0.1f, 40f, 30f, 3f, 0.005f, carTexture, wheelTexture);
 		debugRenderer = new Box2DDebugRenderer();
 		font = new BitmapFont();
 		highscore = mapData.high_score;
