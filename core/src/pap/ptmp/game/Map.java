@@ -31,7 +31,7 @@ public class Map {
     private final SpriteBatch spriteBatch;
     private final Texture groundTexture;
     private final Color skyColor;
-    private int fuelX = 1050;
+    private int fuelX = 1010;
     private int fuelDistance = 50;
     private int fuelDifference = 10; // difference between distances of fuel placement
     private int epsilon = 1;
@@ -100,8 +100,7 @@ public class Map {
             // put fuel
             if (Math.abs(x1 - fuelX) < epsilon) {
                 putFuel(x1, y1 + 0.5f);
-                //beersPos.add(new Vector2(x1, y1 + 0.5f));
-                beersPos.add(new Vector2(1000f, 100f));
+                beersPos.add(new Vector2(x1, y1 + 0.5f));
             }
 
         }
@@ -133,13 +132,7 @@ public class Map {
             for (int j = 70; j <= 130; j+= 5) {
                 spriteBatch.draw(groundTexture, i, j, 5, 5);
             }
-//        if (!beersPos.isEmpty()) {
-//            for (Vector2 pos : beersPos) {
-//                float x = pos.x;
-//                float y = pos.y;
-//                spriteBatch.draw(beerImage, x - 9f, y - 8f);
-//            }
-//        }
+
         spriteBatch.end();
 
         renderer.setColor(skyColor);
@@ -172,6 +165,17 @@ public class Map {
 
             renderer.triangle(x1, y1, x2, y2, x1, BOOTOM_Y_COORD);
             renderer.triangle(x2, y2, x1, BOOTOM_Y_COORD, x2, BOOTOM_Y_COORD);
+        }
+
+        if (!beersPos.isEmpty()) {
+            float beerScale = 0.018f;
+            spriteBatch.begin();
+            for (Vector2 pos : beersPos) {
+                float x = pos.x;
+                float y = pos.y;
+                spriteBatch.draw(beerImage, x - 0.29f, y - 0.29f, beerImage.getWidth() * beerScale, beerImage.getHeight() * beerScale);
+            }
+            spriteBatch.end();
         }
 
         // DEBUG
