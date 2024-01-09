@@ -3,6 +3,9 @@ package pap.ptmp.game;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -26,12 +29,15 @@ public class Vehicle extends InputAdapter {
     private final float backwardSpeed;
     private boolean rotate_left, rotate_right;
     private Body collisionBox;
+    private Texture carTexture;
+    private Texture wheelTexture;
     private float fuel = 100;
     private float fuelConsumptionRatio = 2f; // 1 represents 1 unit per second
     private float jointFrictionForce = 0.005f;
+
     public Vehicle(World world, float x, float y, float width, float height,
                    float wheelRadius, float suspensionHeight, float wheelOffset,
-                   float forwardSpeed, float backwardSpeed) {
+                   float forwardSpeed, float backwardSpeed, Texture carTexture, Texture wheelTexture) {
         this.world = world;
         this.width = width;
         this.height = height;
@@ -42,6 +48,8 @@ public class Vehicle extends InputAdapter {
         this.backwardSpeed = backwardSpeed;
         this.rotate_left = false;
         this.rotate_right = false;
+        this.carTexture = carTexture;
+        this.wheelTexture = wheelTexture;
         createBody(x, y);
         createWheels();
     }
@@ -110,34 +118,42 @@ public class Vehicle extends InputAdapter {
         wheelShape.dispose();
     }
 
-    public void render(ShapeRenderer shapeRenderer) {
-        shapeRenderer.setColor(Color.BLACK);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        float bodyX = body.getPosition().x - width / 2;
-        float bodyY = body.getPosition().y - height / 2;
+    public void render(OrthographicCamera camera) {
+        float bodyAngle = body.getAngle();
+        float bodyX = body.getPosition().x;
+        float bodyY = body.getPosition().y;
 
-        // Rotate the shape renderer around the body's center
-        shapeRenderer.translate(bodyX + width / 2, bodyY + height / 2, 0);
-        shapeRenderer.rotate(0, 0, 1, MathUtils.radiansToDegrees * body.getAngle());
+        float relativeX = -width / 2 - 0.25f;
+        float relativeY = -height / 2 - 0.1f;
 
-        shapeRenderer.rect(-width / 2, -height / 2, width, height);
-        shapeRenderer.identity();
-        shapeRenderer.end();
+        float rotatedX = (float) (bodyX + Math.cos(bodyAngle) * relativeX - Math.sin(bodyAngle) * relativeY);
+        float rotatedY = (float) (bodyY + Math.sin(bodyAngle) * relativeX + Math.cos(bodyAngle) * relativeY);
+        float rotation = MathUtils.radiansToDegrees * body.getAngle();
 
-        // Render the wheels
-        shapeRenderer.setColor(Color.BLACK);
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        SpriteBatch spriteBatch = new SpriteBatch();
+        spriteBatch.begin();
+        spriteBatch.setProjectionMatrix(camera.combined);
+        spriteBatch.draw(carTexture, rotatedX, rotatedY, 0f, 0f, 1.5f, 1.5f, 1f,
+                1f, rotation, 0, 0, carTexture.getWidth(), carTexture.getHeight(), false, false);
 
-        shapeRenderer.translate(leftWheel.getPosition().x, leftWheel.getPosition().y, 0);
-        shapeRenderer.rotate(0, 0, 1, MathUtils.radiansToDegrees * leftWheel.getAngle());
-        shapeRenderer.circle(0, 0, wheelRadius, 10);
-        shapeRenderer.identity();
+        float wheelX = leftWheel.getPosition().x;
+        float wheelY = leftWheel.getPosition().y;
+        rotation = MathUtils.radiansToDegrees * leftWheel.getAngle();
+        rotatedX = wheelX - wheelRadius * MathUtils.cos(leftWheel.getAngle());
+        rotatedY = wheelY - wheelRadius * MathUtils.sin(leftWheel.getAngle());
+        spriteBatch.draw(wheelTexture, rotatedX, rotatedY - wheelRadius, 0, wheelRadius, 2*wheelRadius, 2*wheelRadius, 1f,
+                1f, rotation, 0, 0, wheelTexture.getWidth(), wheelTexture.getHeight(), false, false);
 
-        shapeRenderer.translate(rightWheel.getPosition().x, rightWheel.getPosition().y, 0);
-        shapeRenderer.rotate(0, 0, 1, MathUtils.radiansToDegrees * rightWheel.getAngle());
-        shapeRenderer.circle(0, 0, wheelRadius, 10);
-        shapeRenderer.identity();
-        shapeRenderer.end();
+        wheelX = rightWheel.getPosition().x;
+        wheelY = rightWheel.getPosition().y;
+        rotation = MathUtils.radiansToDegrees * rightWheel.getAngle();
+        rotatedX = wheelX - wheelRadius * MathUtils.cos(rightWheel.getAngle());
+        rotatedY = wheelY - wheelRadius * MathUtils.sin(rightWheel.getAngle());
+        spriteBatch.draw(wheelTexture, rotatedX, rotatedY - wheelRadius, 0, wheelRadius, 2*wheelRadius, 2*wheelRadius, 1f,
+                1f, rotation, 0, 0, wheelTexture.getWidth(), wheelTexture.getHeight(), false, false);
+
+        spriteBatch.end();
+
     }
 
     public boolean canMove() {

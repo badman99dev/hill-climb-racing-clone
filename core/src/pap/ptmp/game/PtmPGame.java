@@ -62,9 +62,11 @@ public class PtmPGame extends ScreenAdapter{
 		Texture groundTexture = tempIO.getTexture(mapData.id);
 		Color skyColor = tempIO.getColor(mapData.id);
 		Texture beerImage = assetManager.get(Assets.BEER_FUEL_IMAGE);
+		Texture carTexture = assetManager.get(Assets.BEER_FUEL_IMAGE);
+		Texture wheelTexture = assetManager.get(Assets.WHEEL_TEXTURE);
 		map = new Map(renderer, world, groundTexture, beerImage, skyColor, mapData.seed);
 		vehicle = new Vehicle(world, 1000f, 100f, 1f, 0.2f, 0.1f,
-				0.2f, 0.1f, 40f, 30f);
+				0.2f, 0.1f, 40f, 30f, carTexture, wheelTexture);
 		debugRenderer = new Box2DDebugRenderer();
 		font = new BitmapFont();
 		highscore = mapData.high_score;
@@ -131,7 +133,7 @@ public class PtmPGame extends ScreenAdapter{
 		renderer.setProjectionMatrix(camera.combined);
 
 		map.render(camera);
-		vehicle.render(renderer);
+		vehicle.render(camera);
 		
 		Color fuelBarCol;
 		float fuelPerc = vehicle.getFuelLevel() / 100.0f;
