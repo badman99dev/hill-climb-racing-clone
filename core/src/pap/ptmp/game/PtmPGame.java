@@ -37,7 +37,7 @@ public class PtmPGame extends ScreenAdapter{
 	private final String escapeText = "Esc-Menu";
 	private SpriteBatch spriteBatch;
 	private BitmapFont font;
-	private String fpsText, scoreText, highscoreText;
+	private String fpsText, scoreText, highscoreText, fuelLevelText;
 	private float highscore, bestposition = 0;
 	private int mapID, money, mapWidth, mapHeight;
 	private Image coinImg;
@@ -138,6 +138,7 @@ public class PtmPGame extends ScreenAdapter{
 		fpsText = "FPS: " + Gdx.graphics.getFramesPerSecond();
 		scoreText = "Score: " + Math.round(bestposition);
 		highscoreText = "Highscore: " + Math.round(highscore);
+		fuelLevelText = "Fuel level: " + Math.round(vehicle.getFuelLevel()) + " %";
 		String moneyText = Integer.toString(money);
 
 		coinImg.draw(spriteBatch, 1);
@@ -146,6 +147,7 @@ public class PtmPGame extends ScreenAdapter{
 		font.draw(spriteBatch, fpsText, 20, mapHeight - 30);
 		font.draw(spriteBatch, scoreText, 20, mapHeight - 45);
 		font.draw(spriteBatch, highscoreText, 20, mapHeight - 60);
+		font.draw(spriteBatch, fuelLevelText, 20, mapHeight - 75);
 		spriteBatch.end();
 
 		if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
