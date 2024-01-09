@@ -22,10 +22,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class PtmPGame extends ScreenAdapter{
 	private Map map;
@@ -91,15 +88,7 @@ public class PtmPGame extends ScreenAdapter{
 		beerImg.setHeight(32);
 		beerImg.setPosition(mapWidth - 90, mapHeight - 65);
 
-		try {
-            Scanner scanner = new Scanner(new File("./money.txt"));
-			if(scanner.hasNextInt()){
-				money = scanner.nextInt();
-			}
-			scanner.close();
-        } catch (FileNotFoundException e) {
-            System.err.println("File not found: " + e.getMessage());
-		}
+		money = 0;
 
 		Sound drive = Gdx.audio.newSound((Gdx.files.internal("Drive.mp3")));
 		drive.play();
