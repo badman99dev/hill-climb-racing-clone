@@ -32,6 +32,8 @@ public class Vehicle extends InputAdapter {
     private Texture carTexture;
     private Texture wheelTexture;
     private float fuel = 100;
+    private final float fuelConsumptionRatio; // 1 represents 1 unit per second
+    private final float jointFrictionForce;
     private float fuelConsumptionRatio = 2f; // 1 represents 1 unit per second
     private float jointFrictionForce = 0.005f;
 
@@ -52,6 +54,8 @@ public class Vehicle extends InputAdapter {
         this.wheelTexture = wheelTexture;
         createBody(x, y);
         createWheels();
+        VehicleCollisionBox vcb = new VehicleCollisionBox(world, this);
+        RoofCollisionDetector rcd = new RoofCollisionDetector(world, this);
     }
 
     private void createBody(float x, float y) {
@@ -207,10 +211,12 @@ public class Vehicle extends InputAdapter {
     }
 
     public void update() {
+        // update fuel level
         if (fuel > 0f) {
             fuel -= 1/60f * fuelConsumptionRatio;
         } else {
             fuel = 0f;
+            leftAxis.enableMotor(false);
         }
         //System.out.println(fuel);
         if (rotate_left && rotate_right || !canMove()){
@@ -260,6 +266,18 @@ public class Vehicle extends InputAdapter {
 
     public float getFuelLevel() {
         return fuel;
+    }
+
+    public Vector2 getRoofCollisionDetectorCenter() {
+        return body.getWorldCenter().add(0, height/2);
+    }
+
+    public float getBodyWidth() {
+        return width;
+    }
+
+    public float getBodyHeight() {
+        return height;
     }
 }
 

@@ -4,8 +4,9 @@ import com.badlogic.gdx.physics.box2d.*;
 
 import java.util.ArrayList;
 
-public class BeerContactListener implements ContactListener {
+public class MyContactListener implements ContactListener {
     ArrayList<Body> deletionList = new ArrayList<Body>();
+    private int currentRoofCollisions = 0; // if >0 roof is colliding with ground
     @Override
     public void beginContact(Contact contact) {
         Fixture fa = contact.getFixtureA();
@@ -26,11 +27,22 @@ public class BeerContactListener implements ContactListener {
             }
 
         }
+
+        if ((fa.getUserData() instanceof Ground && fb.getUserData() instanceof RoofCollisionDetector) ||
+            (fa.getUserData() instanceof RoofCollisionDetector && fb.getUserData() instanceof Ground)) {
+            currentRoofCollisions++;
+        }
     }
 
     @Override
     public void endContact(Contact contact) {
+        Fixture fa = contact.getFixtureA();
+        Fixture fb = contact.getFixtureB();
 
+        if ((fa.getUserData() instanceof Ground && fb.getUserData() instanceof RoofCollisionDetector) ||
+                (fa.getUserData() instanceof RoofCollisionDetector && fb.getUserData() instanceof Ground)) {
+            currentRoofCollisions--;
+        }
     }
 
     @Override
@@ -48,5 +60,9 @@ public class BeerContactListener implements ContactListener {
 
     public ArrayList<Body> getDeletionList() {
         return  deletionList;
+    }
+
+    public int getCurrentRoofCollisions() {
+        return currentRoofCollisions;
     }
 }

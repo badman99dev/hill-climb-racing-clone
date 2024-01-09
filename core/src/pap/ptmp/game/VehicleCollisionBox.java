@@ -27,8 +27,9 @@ public class VehicleCollisionBox {
 
         FixtureDef fixDef = new FixtureDef();
         fixDef.shape = shape;
-        fixDef.density = 0.0000001f;
+        fixDef.density = 0.0000001f; // rotation does not work when density is 0
         fixDef.friction = 0.0f;
+        fixDef.isSensor = true;
 
         body.createFixture(fixDef).setUserData(this);
 
