@@ -63,12 +63,12 @@ public class PtmPGame extends ScreenAdapter{
 		Texture groundTexture = tempIO.getTexture(mapData.id);
 		Color skyColor = tempIO.getColor(mapData.id);
 		Texture beerImage = assetManager.get(Assets.BEER_FUEL_IMAGE);
-		Texture carTexture = assetManager.get(Assets.BEER_FUEL_IMAGE);
+		Texture carTexture = assetManager.get(Assets.CAR_TEXTURE);
 		Texture wheelTexture = assetManager.get(Assets.WHEEL_TEXTURE);
 		Texture coinTexture = assetManager.get(Assets.COIN_IMAGE);
 		map = new Map(renderer, world, groundTexture, beerImage, coinTexture, skyColor, mapData.seed);
-		vehicle = new Vehicle(world, 1000f, 100f, 1f, 0.2f, 0.1f,
-				0.2f, 0.1f, 40f, 30f, 3f, 0.005f, carTexture, wheelTexture);
+		vehicle = new Vehicle(world, 1000f, 100f, 1.24f, 0.2f, 0.1f,
+				0.15f, 0.235f, 0.2f, 40f, 30f, 3f, 0.005f, carTexture, wheelTexture);
 		debugRenderer = new Box2DDebugRenderer();
 		font = new BitmapFont();
 		highscore = mapData.high_score;
