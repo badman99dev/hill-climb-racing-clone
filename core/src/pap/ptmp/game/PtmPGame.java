@@ -12,6 +12,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -41,6 +43,7 @@ public class PtmPGame extends ScreenAdapter{
 	private float highscore, bestposition = 0;
 	private int mapID, money, mapWidth, mapHeight;
 	private Image coinImg;
+	private Image beerImg;
 	private Viewport viewport;
 	private Music music_background;
 	private BeerContactListener beerContactListener;
@@ -73,6 +76,11 @@ public class PtmPGame extends ScreenAdapter{
 		mapWidth = Gdx.graphics.getWidth();
 		mapHeight = Gdx.graphics.getHeight();
 		coinImg.setPosition(mapWidth - 80, mapHeight - 30);
+
+		beerImg = new Image((Texture)assetManager.get(Assets.PIWO_IMAGE));
+		beerImg.setWidth(14);
+		beerImg.setHeight(32);
+		beerImg.setPosition(mapWidth - 90, mapHeight - 65);
 
 		try {
             Scanner scanner = new Scanner(new File("./money.txt"));
@@ -124,6 +132,26 @@ public class PtmPGame extends ScreenAdapter{
 
 		map.render(camera);
 		vehicle.render(renderer);
+		
+		Color fuelBarCol;
+		float fuelPerc = vehicle.getFuelLevel() / 100.0f;
+		if (fuelPerc >= 0.5f)
+			fuelBarCol = new Color(2.0f * (1.0f - fuelPerc), 1.0f, 0.0f, 1.0f);
+		else
+			fuelBarCol = new Color(1.0f, 2.0f * fuelPerc, 0.0f, 1.0f);
+		renderer.setColor(fuelBarCol);
+		renderer.begin(ShapeType.Filled);
+		float fuelBarX = camera.position.x + 0.5f * camera.zoom * camera.viewportWidth - 1.0f;
+		float fuelBarY = camera.position.y + 0.5f * camera.zoom * camera.viewportHeight - 0.7f;
+		float fuelBarW = 0.9f;
+		float fuelBarH = 0.25f;
+		renderer.rect(fuelBarX, fuelBarY, fuelPerc * fuelBarW, fuelBarH);
+		renderer.setColor(Color.BLACK);
+		renderer.rect(fuelBarX, fuelBarY, fuelBarW, 0.01f);
+		renderer.rect(fuelBarX, fuelBarY+fuelBarH, fuelBarW, 0.01f);
+		renderer.rect(fuelBarX, fuelBarY, 0.01f, fuelBarH);
+		renderer.rect(fuelBarX+fuelBarW, fuelBarY, 0.01f, fuelBarH);
+		renderer.end();
 
 		bestposition = Math.max(bestposition, vehicle.getPosition().x - 1000f);
 		spriteBatch.begin();
@@ -134,11 +162,14 @@ public class PtmPGame extends ScreenAdapter{
 		String moneyText = Integer.toString(money);
 
 		coinImg.draw(spriteBatch, 1);
+		beerImg.draw(spriteBatch, 1);
 		font.draw(spriteBatch, moneyText, mapWidth - 50, mapHeight - 12);
 		font.draw(spriteBatch, escapeText, 20, mapHeight - 15);
 		font.draw(spriteBatch, fpsText, 20, mapHeight - 30);
 		font.draw(spriteBatch, scoreText, 20, mapHeight - 45);
 		font.draw(spriteBatch, highscoreText, 20, mapHeight - 60);
+		font.setColor(Color.WHITE);
+		font.draw(spriteBatch, Integer.toString((int)vehicle.getFuelLevel()), mapWidth - 45, mapHeight - 45);
 		spriteBatch.end();
 
 		if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
