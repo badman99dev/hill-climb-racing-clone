@@ -180,8 +180,11 @@ public class PtmPGame extends ScreenAdapter{
 		isGameOver = updateIsGameOver();
 		if (isGameOver){
 			saveMoney(Gdx.files.local("money.txt"), money);
+			if(bestposition > highscore){
+				MapIO.updateHighScore(mapID, bestposition);
+				highscore = bestposition;
+			}
 			game.setScreen(new GameOverScreen(this.assetManager, game, bestposition, highscore));
-
 		}
 //		System.out.println(isGameOver);
 //		System.out.println(vehicle.getFuelLevel());
