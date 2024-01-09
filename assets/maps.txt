@@ -1,3 +1,3 @@
 1,999,313.54736,-3,zielona laka
 2,350,81.279785,-1.5,czerwona planeta
-3,101,3.6208496,-0.8,ksiezycowe kratery
+3,101,154.82715,-0.8,ksiezycowe kratery

@@ -7,6 +7,12 @@ import java.util.ArrayList;
 public class MyContactListener implements ContactListener {
     ArrayList<Body> deletionList = new ArrayList<Body>();
     private int currentRoofCollisions = 0; // if >0 roof is colliding with ground
+    private PtmPGame game;
+
+    MyContactListener(PtmPGame game) {
+        this.game = game;
+    }
+
     @Override
     public void beginContact(Contact contact) {
         Fixture fa = contact.getFixtureA();
@@ -18,15 +24,30 @@ public class MyContactListener implements ContactListener {
         if (isBeerContact(fa, fb)) {
             if (fa.getUserData() instanceof Beer) {
                 deletionList.add(((Beer) fa.getUserData()).body);
-                ((Beer) fa.getUserData()).removeRender();
+                Beer beer = ((Beer) fa.getUserData());
+                beer.getMap().removeBeer(beer.getCoords());
                 ((VehicleCollisionBox) fb.getUserData()).vehicle.refill();
             } else {
                 deletionList.add(((Beer) fb.getUserData()).body);
-                ((Beer) fb.getUserData()).removeRender();
+                Beer beer = ((Beer) fb.getUserData());
+                beer.getMap().removeBeer(beer.getCoords());
                 ((VehicleCollisionBox) fa.getUserData()).vehicle.refill();
             }
 
         }
+        else if (isMoneyContact(fa, fb)) {
+            Money money;
+            if (fa.getUserData() instanceof Money) {
+                money = (Money)fa.getUserData();
+            }
+            else {
+                money = (Money)fb.getUserData();
+            }
+            deletionList.add(money.body);
+            money.getMap().removeCoin(money.getCoords());
+            game.addMoney(1);
+        }
+        
 
         if ((fa.getUserData() instanceof Ground && fb.getUserData() instanceof RoofCollisionDetector) ||
             (fa.getUserData() instanceof RoofCollisionDetector && fb.getUserData() instanceof Ground)) {
@@ -56,6 +77,11 @@ public class MyContactListener implements ContactListener {
     private boolean isBeerContact(Fixture a, Fixture b) {
         return (a.getUserData() instanceof Beer && b.getUserData() instanceof VehicleCollisionBox) ||
                 (a.getUserData() instanceof VehicleCollisionBox && b.getUserData() instanceof Beer);
+    }
+
+    private boolean isMoneyContact(Fixture a, Fixture b) {
+        return (a.getUserData() instanceof Money && b.getUserData() instanceof VehicleCollisionBox) ||
+                (a.getUserData() instanceof VehicleCollisionBox && b.getUserData() instanceof Money);
     }
 
     public ArrayList<Body> getDeletionList() {

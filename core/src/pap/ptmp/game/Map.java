@@ -36,9 +36,11 @@ public class Map {
     private int fuelDifference = 10; // difference between distances of fuel placement
     private int epsilon = 1;
     private ArrayList<Vector2> beersPos;
+    private ArrayList<Vector2> coinsPos;
     private final Texture beerImage;
+    private final Texture coinImage;
 
-    public Map(ShapeRenderer Renderer, World world, Texture groundTexture, Texture beerImage, Color skyColor, int map_seed) {
+    public Map(ShapeRenderer Renderer, World world, Texture groundTexture, Texture beerImage, Texture coinImage, Color skyColor, int map_seed) {
         this.renderer = Renderer;
         this.world = world;
         this.noiseGenerator = new FastNoiseLite(map_seed);
@@ -49,7 +51,9 @@ public class Map {
         this.groundTexture = groundTexture;
         this.skyColor = skyColor;
         this.beerImage = beerImage;
+        this.coinImage = coinImage;
         this.beersPos = new ArrayList<>();
+        this.coinsPos = new ArrayList<>();
         createGroundAndWall();
     }
 
@@ -102,6 +106,14 @@ public class Map {
                 Vector2 coordinates = new Vector2(x1, y1 + 0.5f);
                 putFuel(coordinates);
                 beersPos.add(coordinates);
+
+                for (int j = i + 3; j < i + 18; j += 3) {
+                    float coinX = j * SEGMENT_WIDTH;
+                    float coinY = calculatePerlinHeight(coinX) + VERTICAL_OFFSET + 0.5f;
+                    Vector2 coinPos = new Vector2(coinX, coinY);
+                    Money money = new Money(world, this, coinPos);
+                    coinsPos.add(coinPos);
+                }
             }
 
         }
@@ -113,8 +125,7 @@ public class Map {
         fixtureDef.shape = chainShape;
         fixtureDef.density = 1.0f;
 
-        //groundBody.createFixture(fixtureDef);
-        Ground ground = new Ground(world, groundBody, fixtureDef); // enables collision
+        groundBody.createFixture(fixtureDef);
         chainShape.dispose();
     }
 
@@ -128,10 +139,13 @@ public class Map {
         beersPos.remove(coordinates);
     }
 
+    public void removeCoin(Vector2 coordinates) {
+        coinsPos.remove(coordinates);
+    }
+
     public void render(OrthographicCamera camera) {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        // System.out.println(camera.position.x);
         spriteBatch.begin();
         spriteBatch.setProjectionMatrix(camera.combined);
         for (int i = 0; i < 20000; i+=5)
@@ -173,13 +187,19 @@ public class Map {
             renderer.triangle(x2, y2, x1, BOOTOM_Y_COORD, x2, BOOTOM_Y_COORD);
         }
 
-        if (!beersPos.isEmpty()) {
+        if (!beersPos.isEmpty() || !coinsPos.isEmpty()) {
             float beerScale = 0.018f;
             spriteBatch.begin();
             for (Vector2 pos : beersPos) {
                 float x = pos.x;
                 float y = pos.y;
                 spriteBatch.draw(beerImage, x - 0.29f, y - 0.29f, beerImage.getWidth() * beerScale, beerImage.getHeight() * beerScale);
+            }
+            float coinScale = 0.0005f;
+            for (Vector2 pos : coinsPos) {
+                float x = pos.x;
+                float y = pos.y;
+                spriteBatch.draw(coinImage, x - 0.12f, y - 0.12f, coinImage.getWidth() * coinScale, coinImage.getHeight() * coinScale);
             }
             spriteBatch.end();
         }
