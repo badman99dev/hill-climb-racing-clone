@@ -27,11 +27,12 @@ public class Vehicle extends InputAdapter {
     private boolean rotate_left, rotate_right;
     private Body collisionBox;
     private float fuel = 100;
-    private float fuelConsumptionRatio = 2f; // 1 represents 1 unit per second
-    private float jointFrictionForce = 0.005f;
+    private final float fuelConsumptionRatio; // 1 represents 1 unit per second
+    private final float jointFrictionForce;
     public Vehicle(World world, float x, float y, float width, float height,
                    float wheelRadius, float suspensionHeight, float wheelOffset,
-                   float forwardSpeed, float backwardSpeed) {
+                   float forwardSpeed, float backwardSpeed, float fuelConsumptionRatio,
+                   float jointFrictionForce) {
         this.world = world;
         this.width = width;
         this.height = height;
@@ -42,8 +43,12 @@ public class Vehicle extends InputAdapter {
         this.backwardSpeed = backwardSpeed;
         this.rotate_left = false;
         this.rotate_right = false;
+        this.fuelConsumptionRatio = fuelConsumptionRatio;
+        this.jointFrictionForce = jointFrictionForce;
         createBody(x, y);
         createWheels();
+        VehicleCollisionBox vcb = new VehicleCollisionBox(world, this);
+        RoofCollisionDetector rcd = new RoofCollisionDetector(world, this);
     }
 
     private void createBody(float x, float y) {
@@ -191,6 +196,7 @@ public class Vehicle extends InputAdapter {
     }
 
     public void update() {
+        // update fuel level
         if (fuel > 0f) {
             fuel -= 1/60f * fuelConsumptionRatio;
         } else {
@@ -244,6 +250,18 @@ public class Vehicle extends InputAdapter {
 
     public float getFuelLevel() {
         return fuel;
+    }
+
+    public Vector2 getRoofCollisionDetectorCenter() {
+        return body.getWorldCenter().add(0, height/2);
+    }
+
+    public float getBodyWidth() {
+        return width;
+    }
+
+    public float getBodyHeight() {
+        return height;
     }
 }
 

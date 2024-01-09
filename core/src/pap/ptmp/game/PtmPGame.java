@@ -43,8 +43,12 @@ public class PtmPGame extends ScreenAdapter{
 	private Image coinImg;
 	private Viewport viewport;
 	private Music music_background;
-	private BeerContactListener beerContactListener;
+	private MyContactListener myContactListener;
 	private ArrayList<Body> deletionList;
+	private boolean isGameOver;
+	private int initialGameOverCount = 420; // 60 - 1 second (60fps)
+	private int gameOverCount = initialGameOverCount; // if reaches 0 game is over;
+
 
 	public PtmPGame(UI game, MapIO.MapData mapData, AssetManager assetManager){
 		this.game = game;
@@ -61,7 +65,8 @@ public class PtmPGame extends ScreenAdapter{
 		Texture beerImage = assetManager.get(Assets.BEER_FUEL_IMAGE);
 		map = new Map(renderer, world, groundTexture, beerImage, skyColor, mapData.seed);
 		vehicle = new Vehicle(world, 1000f, 100f, 1f, 0.2f, 0.1f,
-				0.2f, 0.1f, 40f, 30f);
+				0.2f, 0.1f, 40f, 30f,
+				10f, 0.005f);
 		debugRenderer = new Box2DDebugRenderer();
 		font = new BitmapFont();
 		highscore = mapData.high_score;
@@ -73,6 +78,9 @@ public class PtmPGame extends ScreenAdapter{
 		mapWidth = Gdx.graphics.getWidth();
 		mapHeight = Gdx.graphics.getHeight();
 		coinImg.setPosition(mapWidth - 80, mapHeight - 30);
+		isGameOver = false;
+		gameOverCount = initialGameOverCount;
+
 
 		try {
             Scanner scanner = new Scanner(new File("./money.txt"));
@@ -92,10 +100,9 @@ public class PtmPGame extends ScreenAdapter{
 		music_background.play();
 		music_background.setLooping(true);
 
-		beerContactListener = new BeerContactListener();
-		world.setContactListener(beerContactListener);
-		deletionList = beerContactListener.getDeletionList();
-        VehicleCollisionBox vcb = new VehicleCollisionBox(world, vehicle);
+		myContactListener = new MyContactListener();
+		world.setContactListener(myContactListener);
+		deletionList = myContactListener.getDeletionList();
 	}
 
 	@Override
@@ -148,6 +155,10 @@ public class PtmPGame extends ScreenAdapter{
 			game.setPauseScreen();
 		}
 		debugRenderer.render(world, camera.combined);   //debug renderer works only if map segments <= 1000
+
+		isGameOver = updateIsGameOver();
+		System.out.println(isGameOver);
+		System.out.println(vehicle.getFuelLevel());
 	}
 
 	public void hide () {
@@ -165,4 +176,19 @@ public class PtmPGame extends ScreenAdapter{
     public void resize(int width, int height) {
         viewport.update(width, height, true);
     }
+
+	private boolean updateIsGameOver() {
+		float fuelLevel = vehicle.getFuelLevel();
+		int currentRoofCollisions = myContactListener.getCurrentRoofCollisions();
+
+		if(fuelLevel == 0 || currentRoofCollisions > 0) {
+			if(gameOverCount == 0) {
+				return true;
+			}
+			gameOverCount -= 1;
+		} else {
+			gameOverCount = initialGameOverCount;
+		}
+		return false;
+	}
 }
