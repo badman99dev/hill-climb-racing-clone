@@ -118,6 +118,9 @@ public class Map {
                 beersPos.add(coordinates);
             }
             if (Math.abs(x1 - currentCoinX) < epsilon) {
+                if (Math.abs(currentCoinX - fuelX) < epsilon) {
+                    currentCoinX = fuelX + 0.5f;
+                }
                 if (coinsCount == 0) {
                     coinsCount = rand.nextInt((maxCoins - minCoins) + 1) + minCoins;
                 }
