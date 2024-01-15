@@ -13,7 +13,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import fastnoiseLite.FastNoiseLite;
 import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.HashMap;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Map {
     private static final int SEGMENTS = 1000;
@@ -37,6 +40,8 @@ public class Map {
     private int epsilon = 1;
     private ArrayList<Vector2> beersPos;
     private ArrayList<Vector2> coinsPos;
+    private ConcurrentHashMap<Vector2, Integer> beersRemoved;
+    private ConcurrentHashMap<Vector2, Integer> coinsRemoved;
     private final Texture beerImage;
     private final Texture coinImage;
     Random rand;
@@ -62,6 +67,8 @@ public class Map {
         this.coinImage = coinImage;
         this.beersPos = new ArrayList<>();
         this.coinsPos = new ArrayList<>();
+        this.beersRemoved = new ConcurrentHashMap<>();
+        this.coinsRemoved = new ConcurrentHashMap<>();
         this.rand = new Random(map_seed);
         createGroundAndWall();
     }
@@ -154,10 +161,12 @@ public class Map {
 
     public void removeBeer(Vector2 coordinates) {
         beersPos.remove(coordinates);
+        beersRemoved.put(coordinates, 30);
     }
 
     public void removeCoin(Vector2 coordinates) {
         coinsPos.remove(coordinates);
+        coinsRemoved.put(coordinates, 30);
     }
 
     public void render(OrthographicCamera camera) {
@@ -215,20 +224,49 @@ public class Map {
                 float y = pos.y;
                 spriteBatch.draw(beerImage, x - 0.29f, y - 0.29f, beerImage.getWidth() * beerScale, beerImage.getHeight() * beerScale);
             }
+            for (Vector2 pos : beersRemoved.keySet()) {
+                float x = pos.x;
+                float y = pos.y;
+                Integer iterations = beersRemoved.get(pos);
+                float offset = (30 - iterations) * 0.01f;
+                spriteBatch.setColor(1, 1, 1, 1 - (30 - iterations) / 30f);
+                spriteBatch.draw(beerImage, x - 0.29f, y - 0.29f + offset, beerImage.getWidth() * beerScale, beerImage.getHeight() * beerScale);
+                if (iterations <= 0) {
+                    beersRemoved.remove(pos);
+                }
+                else {
+                    beersRemoved.put(pos, iterations - 1);
+                }
+            }
+            spriteBatch.setColor(1, 1,1 , 1);
             float coinScale = 0.0005f;
             for (Vector2 pos : coinsPos) {
                 float x = pos.x;
                 float y = pos.y;
                 spriteBatch.draw(coinImage, x - 0.12f, y - 0.12f, coinImage.getWidth() * coinScale, coinImage.getHeight() * coinScale);
             }
+            for (Vector2 pos : coinsRemoved.keySet()) {
+                float x = pos.x;
+                float y = pos.y;
+                Integer iterations = coinsRemoved.get(pos);
+                float offset = (30 - iterations) * 0.01f;
+                spriteBatch.setColor(1, 1, 1, 1 - (30 - iterations) / 30f);
+                spriteBatch.draw(coinImage, x - 0.12f, y - 0.12f + offset, coinImage.getWidth() * coinScale, coinImage.getHeight() * coinScale);
+                if (iterations <= 0) {
+                    coinsRemoved.remove(pos);
+                }
+                else {
+                    coinsRemoved.put(pos, iterations - 1);
+                }
+            }
+            spriteBatch.setColor(1, 1, 1, 1);
             spriteBatch.end();
         }
+        renderer.end();
 
         // DEBUG
         //renderer.line(minX+1, 0, minX+1, 500, Color.RED, Color.RED);
         //renderer.line(maxX-1, 0, maxX-1, 500, Color.RED, Color.RED);
-
-        renderer.end();
     }
 
     private float calculateSinusoidalNoiseHeight(float x) {
