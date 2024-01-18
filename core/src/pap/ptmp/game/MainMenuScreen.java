@@ -23,6 +23,7 @@ public class MainMenuScreen extends ScreenAdapter{
     private Table mainTable;
     private UI game;
     private AssetManager assetManager;
+    private float accum;
 
     public MainMenuScreen(AssetManager assetManager, UI game){
         this.game = game;
@@ -33,6 +34,7 @@ public class MainMenuScreen extends ScreenAdapter{
         mainTable = new Table();
         mainTable.setFillParent(true);
         stage.addActor(mainTable);
+        accum = 0.0f;
     }
     @Override
     public void show(){
@@ -80,7 +82,10 @@ public class MainMenuScreen extends ScreenAdapter{
 
     @Override
     public void render(float delta){
-        Gdx.gl.glClearColor(.1f, .1f, .15f, 1);
+        accum += delta;
+        float r = 0.5f * ((float)Math.sin((float)accum) + 1.f);
+
+        Gdx.gl.glClearColor(.2f * r, .1f, .15f,1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         stage.act();
