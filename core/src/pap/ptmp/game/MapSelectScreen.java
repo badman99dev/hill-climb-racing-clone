@@ -23,10 +23,12 @@ public class MapSelectScreen extends ScreenAdapter  {
     private UI game;
     private float accum;
     private MapIO mapLoader;
+    private AssetManager assetManager;
 
     public MapSelectScreen(AssetManager assetManager, UI game) {
         this.game = game;
         this.skin = assetManager.get(Assets.SKIN);
+        this.assetManager = assetManager;
         viewport = new ExtendViewport(1080, 720);
         stage = new Stage(viewport);
         mainTable = new Table();
@@ -44,7 +46,8 @@ public class MapSelectScreen extends ScreenAdapter  {
             addButton(map.name).addListener(new ClickListener(){
                 @Override
                 public void clicked(InputEvent event, float x, float y){
-                    game.resetGame(map);
+                    //game.resetGame(map);
+                    game.setScreen(new CarSelectScreen(assetManager, game, map));
                 }
             });
         }

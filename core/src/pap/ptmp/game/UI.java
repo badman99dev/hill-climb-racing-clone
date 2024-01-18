@@ -13,9 +13,10 @@ public class UI extends Game{
     private SpriteBatch batch;
     private BitmapFont font;
     private AssetManager assetManager;
-
+    private Cars cars;
     @Override
     public void create(){
+        cars = new Cars();
         Assets assets = new Assets();
         assets.loadAll();
         assetManager = assets.getAssetManager();
@@ -36,8 +37,8 @@ public class UI extends Game{
         setScreen(gameScreen);
     }
 
-    public void resetGame(MapIO.MapData mapData){
-        this.gameScreen = new PtmPGame(this, mapData, assetManager);
+    public void resetGame(MapIO.MapData mapData, int carId){
+        this.gameScreen = new PtmPGame(this, mapData, carId, assetManager);
         this.setGameScreen();
     }
 
@@ -53,6 +54,9 @@ public class UI extends Game{
         return font;
     }
 
+    public Cars getCars() {
+        return cars;
+    }
     @Override
     public void resize(int width, int height){
         getScreen().resize(width, height);

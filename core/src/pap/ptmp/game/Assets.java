@@ -23,6 +23,11 @@ public class Assets {
     public static final String CAR_TEXTURE = "car.png";
     public static final String WHEEL_TEXTURE = "wheel.png";
     public static final String SKULL_IMAGE = "skull.png";
+    public static final String BLUE_CAR_IMAGE = "car_blue.png";
+    public static final String GREEN_CAR_IMAGE = "car_green.png";
+    public static final String PURPLE_CAR_IMAGE = "car_purple.png";
+    public static final String RED_CAR_IMAGE = "car_red.png";
+    public static final String YELLOW_CAR_IMAGE = "car_yellow.png";
 
 
 
@@ -42,6 +47,14 @@ public class Assets {
         assetManager.load(CAR_TEXTURE, Texture.class);
         assetManager.load(WHEEL_TEXTURE, Texture.class);
         assetManager.load(SKULL_IMAGE, Texture.class);
+    }
+
+    public void loadCars() {
+        assetManager.load(BLUE_CAR_IMAGE, Texture.class);
+        assetManager.load(GREEN_CAR_IMAGE, Texture.class);
+        assetManager.load(PURPLE_CAR_IMAGE, Texture.class);
+        assetManager.load(RED_CAR_IMAGE, Texture.class);
+        assetManager.load(YELLOW_CAR_IMAGE, Texture.class);
     }
 
     public AssetManager getAssetManager(){

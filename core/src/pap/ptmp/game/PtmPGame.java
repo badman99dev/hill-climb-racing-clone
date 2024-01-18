@@ -50,7 +50,7 @@ public class PtmPGame extends ScreenAdapter{
 	private AssetManager assetManager;
 
 
-	public PtmPGame(UI game, MapIO.MapData mapData, AssetManager assetManager){
+	public PtmPGame(UI game, MapIO.MapData mapData, int carId, AssetManager assetManager){
 		this.game = game;
 		camera = new OrthographicCamera();
 		spriteBatch = new SpriteBatch();
@@ -63,10 +63,12 @@ public class PtmPGame extends ScreenAdapter{
 		Texture groundTexture = tempIO.getTexture(mapData.id);
 		Color skyColor = tempIO.getColor(mapData.id);
 		Texture beerImage = assetManager.get(Assets.BEER_FUEL_IMAGE);
-		Texture carTexture = assetManager.get(Assets.CAR_TEXTURE);
+		Texture carTexture = game.getCars().getTexture(carId);
 		Texture wheelTexture = assetManager.get(Assets.WHEEL_TEXTURE);
 		Texture coinTexture = assetManager.get(Assets.COIN_IMAGE);
 		map = new Map(renderer, world, groundTexture, beerImage, coinTexture, skyColor, mapData.seed);
+
+
 		vehicle = new Vehicle(world, 1000f, 100f, 1.24f, 0.2f, 0.1f,
 				0.15f, 0.235f, 0.2f, 40f, 30f, 3f, 0.005f, carTexture, wheelTexture);
 		debugRenderer = new Box2DDebugRenderer();
