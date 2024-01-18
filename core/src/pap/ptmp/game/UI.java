@@ -13,10 +13,10 @@ public class UI extends Game{
     private SpriteBatch batch;
     private BitmapFont font;
     private AssetManager assetManager;
-    private Cars cars;
+    private VehicleIO vehicleIO;
     @Override
     public void create(){
-        cars = new Cars();
+        vehicleIO = new VehicleIO();
         Assets assets = new Assets();
         assets.loadAll();
         assetManager = assets.getAssetManager();
@@ -54,8 +54,8 @@ public class UI extends Game{
         return font;
     }
 
-    public Cars getCars() {
-        return cars;
+    public VehicleIO getVehicleIO() {
+        return vehicleIO;
     }
     @Override
     public void resize(int width, int height){

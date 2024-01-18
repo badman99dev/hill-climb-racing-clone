@@ -37,7 +37,7 @@ public class CarSelectScreen extends ScreenAdapter {
 
     @Override
     public void show(){
-        for (final Cars.CarData car : game.getCars().getCars()) {
+        for (final VehicleIO.CarData car : game.getVehicleIO().getCars()) {
             addButton(car.name).addListener(new ClickListener(){
                 @Override
                 public void clicked(InputEvent event, float x, float y){
