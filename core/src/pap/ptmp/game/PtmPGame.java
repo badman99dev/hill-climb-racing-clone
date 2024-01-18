@@ -62,8 +62,9 @@ public class PtmPGame extends ScreenAdapter{
 		MapIO tempIO = new MapIO();
 		Texture groundTexture = tempIO.getTexture(mapData.id);
 		Color skyColor = tempIO.getColor(mapData.id);
+		VehicleIO vehicleIO = new VehicleIO(assetManager);
 		Texture beerImage = assetManager.get(Assets.BEER_FUEL_IMAGE);
-		Texture carTexture = assetManager.get(Assets.CAR_TEXTURE);
+		Texture carTexture = vehicleIO.getTexture(3);
 		Texture wheelTexture = assetManager.get(Assets.WHEEL_TEXTURE);
 		Texture coinTexture = assetManager.get(Assets.COIN_IMAGE);
 		map = new Map(renderer, world, groundTexture, beerImage, coinTexture, skyColor, mapData.seed);
