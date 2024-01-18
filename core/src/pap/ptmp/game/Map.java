@@ -12,9 +12,8 @@ import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import fastnoiseLite.FastNoiseLite;
+
 import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -35,8 +34,8 @@ public class Map {
     private final Texture groundTexture;
     private final Color skyColor;
     private int fuelX = 1010;
-    private int fuelDistance = 50;
-    private int fuelDifference = 10; // difference between distances of fuel placement
+    private int fuelDistance = 25;
+    private int fuelDifference = 5; // difference between distances of fuel placement
     private int epsilon = 1;
     private ArrayList<Vector2> beersPos;
     private ArrayList<Vector2> coinsPos;

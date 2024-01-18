@@ -262,7 +262,11 @@ public class Vehicle extends InputAdapter {
     }
 
     public void refill() {
-        fuel = 100;
+        if(fuel + 50  > 100) {
+            fuel = 100;
+        } else {
+            fuel += 50;
+        }
     }
 
     public float getFuelLevel() {
