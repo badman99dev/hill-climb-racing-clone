@@ -205,14 +205,22 @@ public class Map {
         int segmentEnd = (int)Math.ceil((double)(maxX / SEGMENT_WIDTH));
 
         for (int i = segmentStart; i <= segmentEnd; i++) {
+            renderer.setColor(skyColor);
             float x1 = i * SEGMENT_WIDTH;
             float x2 = (i + 1) * SEGMENT_WIDTH;
 
-            float y1 = calculatePerlinHeight(x1) + VERTICAL_OFFSET;
-            float y2 = calculatePerlinHeight(x2) + VERTICAL_OFFSET;
+            float linx1 = calculatePerlinHeight(x1);
+            float linx2 = calculatePerlinHeight(x2);
+
+            float y1 = linx1 + VERTICAL_OFFSET;
+            float y2 = linx2 + VERTICAL_OFFSET;
 
             renderer.triangle(x1, y1, x2, y2, x1, BOOTOM_Y_COORD);
             renderer.triangle(x2, y2, x1, BOOTOM_Y_COORD, x2, BOOTOM_Y_COORD);
+            renderer.setColor(Color.BLACK);
+            renderer.triangle(x1, y1 - 0.02f, x2, y2, x1, y1);
+            renderer.triangle(x2, y2 - 0.02f, x1, y1 - 0.02f, x2, y2);
+
         }
 
         if (!beersPos.isEmpty() || !coinsPos.isEmpty()) {
