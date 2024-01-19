@@ -37,7 +37,7 @@ public class MyContactListener implements ContactListener {
                 beer.getMap().removeBeer(beer.getCoords());
                 ((VehicleCollisionBox) fa.getUserData()).vehicle.refill();
             }
-            beer.play(1.0f); // playing sound
+            beer.play(1.3f); // playing sound
         }
         else if (isMoneyContact(fa, fb)) {
             Money money;
@@ -50,7 +50,7 @@ public class MyContactListener implements ContactListener {
             deletionList.add(money.body);
             money.getMap().removeCoin(money.getCoords());
             game.addMoney(1);
-            coin.play(1.0f); // playing sound
+            coin.play(0.3f); // playing sound
         }
         
 

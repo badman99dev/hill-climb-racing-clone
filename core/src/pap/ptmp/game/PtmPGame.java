@@ -91,10 +91,10 @@ public class PtmPGame extends ScreenAdapter{
 		money = loadMoney((Gdx.files.internal("money.txt")));
 
 		Sound drive = Gdx.audio.newSound((Gdx.files.internal("Drive.mp3")));
-		drive.play();
+		drive.play(0.5f);
 
 		this.music_background = Gdx.audio.newMusic(Gdx.files.internal("Nightcall.ogg"));
-		music_background.setVolume(0.1f);
+		music_background.setVolume(0.05f);
 		music_background.play();
 		music_background.setLooping(true);
 
