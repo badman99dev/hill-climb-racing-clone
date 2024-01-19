@@ -1,5 +1,7 @@
 package pap.ptmp.game;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.physics.box2d.*;
 
 import java.util.ArrayList;
@@ -8,6 +10,8 @@ public class MyContactListener implements ContactListener {
     ArrayList<Body> deletionList = new ArrayList<Body>();
     private int currentRoofCollisions = 0; // if >0 roof is colliding with ground
     private PtmPGame game;
+    Sound beer = Gdx.audio.newSound(Gdx.files.internal("beer.mp3"));
+    Sound coin = Gdx.audio.newSound(Gdx.files.internal("coin.mp3"));
 
     MyContactListener(PtmPGame game) {
         this.game = game;
@@ -33,7 +37,7 @@ public class MyContactListener implements ContactListener {
                 beer.getMap().removeBeer(beer.getCoords());
                 ((VehicleCollisionBox) fa.getUserData()).vehicle.refill();
             }
-
+            beer.play(1.0f); // playing sound
         }
         else if (isMoneyContact(fa, fb)) {
             Money money;
@@ -46,6 +50,7 @@ public class MyContactListener implements ContactListener {
             deletionList.add(money.body);
             money.getMap().removeCoin(money.getCoords());
             game.addMoney(1);
+            coin.play(1.0f); // playing sound
         }
         
 
