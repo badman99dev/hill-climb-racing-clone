@@ -50,7 +50,7 @@ public class PtmPGame extends ScreenAdapter{
 	private AssetManager assetManager;
 
 
-	public PtmPGame(UI game, MapIO.MapData mapData, int carId, AssetManager assetManager){
+	public PtmPGame(UI game, MapIO.MapData mapData, int carId, AssetManager assetManager, Music music_background){
 		this.game = game;
 		camera = new OrthographicCamera();
 		spriteBatch = new SpriteBatch();
@@ -90,10 +90,7 @@ public class PtmPGame extends ScreenAdapter{
 
 		money = loadMoney((Gdx.files.internal("money.txt")));
 
-		Sound drive = Gdx.audio.newSound((Gdx.files.internal("Drive.mp3")));
-		drive.play(0.5f);
-
-		this.music_background = Gdx.audio.newMusic(Gdx.files.internal("Nightcall.ogg"));
+		this.music_background = game.music_background;
 		music_background.setVolume(0.05f);
 		music_background.play();
 		music_background.setLooping(true);

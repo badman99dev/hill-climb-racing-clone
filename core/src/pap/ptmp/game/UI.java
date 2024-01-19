@@ -1,8 +1,10 @@
 package pap.ptmp.game;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
@@ -14,6 +16,7 @@ public class UI extends Game{
     private BitmapFont font;
     private AssetManager assetManager;
     private VehicleIO vehicleIO;
+    public Music music_background;
     @Override
     public void create(){
         vehicleIO = new VehicleIO();
@@ -21,6 +24,7 @@ public class UI extends Game{
         assets.loadAll();
         assetManager = assets.getAssetManager();
         assetManager.finishLoading();
+        music_background = Gdx.audio.newMusic(Gdx.files.internal("Nightcall.ogg"));
         batch = new SpriteBatch();
         font = new BitmapFont();
         //gameScreen = new PtmPGame(this);
@@ -38,7 +42,7 @@ public class UI extends Game{
     }
 
     public void resetGame(MapIO.MapData mapData, int carId){
-        this.gameScreen = new PtmPGame(this, mapData, carId, assetManager);
+        this.gameScreen = new PtmPGame(this, mapData, carId, assetManager, music_background);
         this.setGameScreen();
     }
 
