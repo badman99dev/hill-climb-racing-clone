@@ -28,6 +28,7 @@ public class Assets {
     public static final String PURPLE_CAR_IMAGE = "car_purple.png";
     public static final String RED_CAR_IMAGE = "car_red.png";
     public static final String YELLOW_CAR_IMAGE = "car_yellow.png";
+    public static final String MENU_LOGO = "piwotomojepaliwo.png";
 
 
 
@@ -47,6 +48,7 @@ public class Assets {
         assetManager.load(CAR_TEXTURE, Texture.class);
         assetManager.load(WHEEL_TEXTURE, Texture.class);
         assetManager.load(SKULL_IMAGE, Texture.class);
+        assetManager.load(MENU_LOGO, Texture.class);
     }
 
     public void loadCars() {

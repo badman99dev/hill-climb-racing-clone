@@ -38,8 +38,9 @@ public class MainMenuScreen extends ScreenAdapter{
     }
     @Override
     public void show(){
-        Texture imageTexture = assetManager.get(Assets.PIWO_IMAGE);
-        mainTable.add(addImageLabel(imageTexture, 90, 204, " to moje paliwo")).row();
+        Texture imageTexture = assetManager.get(Assets.MENU_LOGO);
+        mainTable.add(addImageLabel(imageTexture, 700, 304, "")).row();
+
         addButton("Graj").addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y){

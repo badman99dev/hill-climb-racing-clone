@@ -48,7 +48,8 @@ public class PtmPGame extends ScreenAdapter{
 	private int initialGameOverCount = 180; // 60 - 1 second (60fps)
 	private int gameOverCount = initialGameOverCount; // if reaches 0 game is over;
 	private AssetManager assetManager;
-
+	private float fontHeight;
+	private float halfFontHeight;
 
 	public PtmPGame(UI game, MapIO.MapData mapData, int carId, AssetManager assetManager, Music music_background){
 		this.game = game;
@@ -71,22 +72,25 @@ public class PtmPGame extends ScreenAdapter{
 				0.15f, 0.235f, 0.2f, 40f, 30f, 3f, 0.005f, carTexture, wheelTexture);
 		debugRenderer = new Box2DDebugRenderer();
 		font = new BitmapFont();
+		font.getData().setScale(3f);
+		fontHeight = font.getCapHeight();
+		halfFontHeight = fontHeight * 0.5f;
 		highscore = mapData.high_score;
 		mapID = mapData.id;
 		viewport = new ExtendViewport(1080, 720);
 		coinImg = new Image(coinTexture);
-		coinImg.setWidth(25);
-		coinImg.setHeight(25);
+		coinImg.setWidth(1.5f * fontHeight);
+		coinImg.setHeight(1.5f * fontHeight);
 		mapWidth = Gdx.graphics.getWidth();
 		mapHeight = Gdx.graphics.getHeight();
-		coinImg.setPosition(mapWidth - 80, mapHeight - 30);
+		coinImg.setPosition(mapWidth - 155, mapHeight - fontHeight * 5.8f);
 		isGameOver = false;
 		gameOverCount = initialGameOverCount;
 
 		beerImg = new Image((Texture)assetManager.get(Assets.PIWO_IMAGE));
-		beerImg.setWidth(14);
-		beerImg.setHeight(32);
-		beerImg.setPosition(mapWidth - 90, mapHeight - 65);
+		beerImg.setWidth(1.5f * 14f/32f * fontHeight);
+		beerImg.setHeight(1.5f * fontHeight);
+		beerImg.setPosition(mapWidth - 140, mapHeight - fontHeight * 4.3f);
 
 		money = loadMoney((Gdx.files.internal("money.txt")));
 
@@ -135,9 +139,9 @@ public class PtmPGame extends ScreenAdapter{
 		renderer.setColor(fuelBarCol);
 		renderer.begin(ShapeType.Filled);
 		float fuelBarX = camera.position.x + 0.5f * camera.zoom * camera.viewportWidth - 1.0f;
-		float fuelBarY = camera.position.y + 0.5f * camera.zoom * camera.viewportHeight - 0.7f;
+		float fuelBarY = camera.position.y + 0.55f * camera.zoom * camera.viewportHeight - 0.7f;
 		float fuelBarW = 0.9f;
-		float fuelBarH = 0.25f;
+		float fuelBarH = 0.3f;
 		renderer.rect(fuelBarX, fuelBarY, fuelPerc * fuelBarW, fuelBarH);
 		renderer.setColor(Color.BLACK);
 		renderer.rect(fuelBarX, fuelBarY, fuelBarW, 0.01f);
@@ -156,13 +160,14 @@ public class PtmPGame extends ScreenAdapter{
 
 		coinImg.draw(spriteBatch, 1);
 		beerImg.draw(spriteBatch, 1);
-		font.draw(spriteBatch, moneyText, mapWidth - 50, mapHeight - 12);
-		font.draw(spriteBatch, escapeText, 20, mapHeight - 15);
-		font.draw(spriteBatch, fpsText, 20, mapHeight - 30);
-		font.draw(spriteBatch, scoreText, 20, mapHeight - 45);
-		font.draw(spriteBatch, highscoreText, 20, mapHeight - 60);
+		font.draw(spriteBatch, moneyText, mapWidth - 100f, mapHeight - 4.5f * fontHeight);
+		font.draw(spriteBatch, escapeText, 20f, mapHeight - fontHeight * 0.8f);
+		font.draw(spriteBatch, fpsText, 20f, mapHeight - fontHeight * 2f);
+		font.draw(spriteBatch, scoreText, 20f, mapHeight - fontHeight * 3.2f);
+		font.draw(spriteBatch, highscoreText, 20f, mapHeight - fontHeight * 4.4f);
 		font.setColor(Color.WHITE);
-		font.draw(spriteBatch, Integer.toString((int)vehicle.getFuelLevel()), mapWidth - 45, mapHeight - 45);
+		font.draw(spriteBatch, Integer.toString((int)vehicle.getFuelLevel()), mapWidth - 100f, mapHeight - 3 * fontHeight);
+		System.out.println(fuelBarX);
 		spriteBatch.end();
 
 		if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
@@ -182,8 +187,6 @@ public class PtmPGame extends ScreenAdapter{
 			}
 			game.setScreen(new GameOverScreen(this.assetManager, game, bestposition, highscore));
 		}
-//		System.out.println(isGameOver);
-//		System.out.println(vehicle.getFuelLevel());
 	}
 
 	public void hide () {
