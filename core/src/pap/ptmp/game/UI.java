@@ -25,6 +25,7 @@ public class UI extends Game{
         assetManager = assets.getAssetManager();
         assetManager.finishLoading();
         music_background = Gdx.audio.newMusic(Gdx.files.internal("Nightcall.ogg"));
+        music_background.setVolume(0.05f);
         batch = new SpriteBatch();
         font = new BitmapFont();
         //gameScreen = new PtmPGame(this);

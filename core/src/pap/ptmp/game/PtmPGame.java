@@ -91,7 +91,6 @@ public class PtmPGame extends ScreenAdapter{
 		money = loadMoney((Gdx.files.internal("money.txt")));
 
 		this.music_background = game.music_background;
-		music_background.setVolume(0.05f);
 		music_background.play();
 		music_background.setLooping(true);
 
