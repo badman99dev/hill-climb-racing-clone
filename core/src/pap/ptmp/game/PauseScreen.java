@@ -52,7 +52,7 @@ public class PauseScreen extends ScreenAdapter {
         });
 
         Texture imageTexture = assetManager.get(Assets.PAUSE_IMAGE);
-        mainTable.add(addImageLabel(imageTexture, 90, 90, "Pauza")).row();
+        mainTable.add(addImageLabel(imageTexture, 90, 90, "Pause")).row();
 
         mainTable.row();
         mainTable.add(new Label("Music volume", skin)).padBottom(0);
