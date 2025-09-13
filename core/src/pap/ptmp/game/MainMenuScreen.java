@@ -41,19 +41,19 @@ public class MainMenuScreen extends ScreenAdapter{
         Texture imageTexture = assetManager.get(Assets.MENU_LOGO);
         mainTable.add(addImageLabel(imageTexture, 700, 304, "")).row();
 
-        addButton("Graj").addListener(new ClickListener(){
+        addButton("Play").addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y){
                 game.setScreen(new MapSelectScreen(assetManager, game));
             }
         });
-        addButton("Sterowanie").addListener(new ClickListener(){
+        addButton("Controls").addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y){
                 game.setScreen(new ControlScreen(assetManager, game, false));
             }
         });
-        addButton("Wyjscie").addListener(new ClickListener(){
+        addButton("Exit").addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y){
                 Gdx.app.exit();

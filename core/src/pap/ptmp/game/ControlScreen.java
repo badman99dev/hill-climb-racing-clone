@@ -35,18 +35,18 @@ public class ControlScreen extends ScreenAdapter {
         stage.addActor(mainTable);
 
         Texture imageTexture = assetManager.get(Assets.SETTINGS_IMAGE);
-        mainTable.add(addImageLabel(imageTexture, 90, 90, "Ustawienia")).row();
+        mainTable.add(addImageLabel(imageTexture, 90, 90, "Settings")).row();
         imageTexture = assetManager.get(Assets.W_IMAGE);
-        mainTable.add(addImageLabel(imageTexture, 90, 90, " - jazda na przod")).row();
+        mainTable.add(addImageLabel(imageTexture, 90, 90, " - Drive forward")).row();
         imageTexture = assetManager.get(Assets.S_IMAGE);
-        mainTable.add(addImageLabel(imageTexture, 90, 90, " - jazda wstecz")).row();
+        mainTable.add(addImageLabel(imageTexture, 90, 90, " - Drive backward")).row();
         imageTexture = assetManager.get(Assets.SPACE_IMAGE);
-        mainTable.add(addImageLabel(imageTexture, 270, 90, " - hamulec")).row();
+        mainTable.add(addImageLabel(imageTexture, 270, 90, " - Brake")).row();
     }
 
     @Override
     public void show(){
-        addButton("Powrot").addListener(new ClickListener(){
+        addButton("Back").addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y){
                 if (backToGame) game.setPauseScreen();

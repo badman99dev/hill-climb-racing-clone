@@ -55,24 +55,24 @@ public class PauseScreen extends ScreenAdapter {
         mainTable.add(addImageLabel(imageTexture, 90, 90, "Pauza")).row();
 
         mainTable.row();
-        mainTable.add(new Label("Glosnosc muzyki", skin)).padBottom(0);
+        mainTable.add(new Label("Music volume", skin)).padBottom(0);
         mainTable.row();
         mainTable.add(volumeSlider).fillX().width(500).height(90).padBottom(20);
         mainTable.row();
 
-        addButton("Wznow").addListener(new ClickListener(){
+        addButton("Return").addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y){
                 game.setGameScreen();
             }
         });
-        addButton("Sterowanie").addListener(new ClickListener(){
+        addButton("Controls").addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y){
                 game.setScreen(new ControlScreen(assetManager, game, true));;
             }
         });
-        addButton("Powrot do menu").addListener(new ClickListener(){
+        addButton("Back to menu").addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y){
                 game.setMainMenuScreen();

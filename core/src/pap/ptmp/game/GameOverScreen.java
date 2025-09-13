@@ -42,14 +42,14 @@ public class GameOverScreen extends ScreenAdapter {
     public void show(){
         Texture imageTexture = assetManager.get(Assets.SKULL_IMAGE);
         if (score > highscore){
-            mainTable.add(addLabel("NOWY REKORD MAPY")).row();
+            mainTable.add(addLabel("NEW RECORD")).row();
         }
-        mainTable.add(addImageLabel(imageTexture, 90, 90, "Koniec gry")).row();
-        mainTable.add(addLabel("Wynik: " + Integer.toString(Math.round(score)))).row();
+        mainTable.add(addImageLabel(imageTexture, 90, 90, "Game Over")).row();
+        mainTable.add(addLabel("Score: " + Integer.toString(Math.round(score)))).row();
         mainTable.add(addLabel("Highscore: " + Integer.toString(Math.round(highscore)))).row();
 
 
-        addButton("Powrot do menu").addListener(new ClickListener(){
+        addButton("Back to menu").addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y){
                 game.setMainMenuScreen();
