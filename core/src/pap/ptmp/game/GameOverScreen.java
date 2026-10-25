@@ -24,8 +24,9 @@ public class GameOverScreen extends ScreenAdapter {
     private UI game;
     private AssetManager assetManager;
     private float score, highscore;
+    private int coinsEarned;
 
-    public GameOverScreen(AssetManager assetManager, UI game, float score, float highscore){
+    public GameOverScreen(AssetManager assetManager, UI game, float score, float highscore, int coinsEarned){
         this.game = game;
         this.assetManager = assetManager;
         this.skin = assetManager.get(Assets.SKIN);
@@ -36,6 +37,7 @@ public class GameOverScreen extends ScreenAdapter {
         stage.addActor(mainTable);
         this.score = score;
         this.highscore = highscore;
+        this.coinsEarned = coinsEarned;
     }
 
     @Override
@@ -45,8 +47,10 @@ public class GameOverScreen extends ScreenAdapter {
             mainTable.add(addLabel("NEW RECORD")).row();
         }
         mainTable.add(addImageLabel(imageTexture, 90, 90, "Game Over")).row();
-        mainTable.add(addLabel("Score: " + Integer.toString(Math.round(score)))).row();
-        mainTable.add(addLabel("Highscore: " + Integer.toString(Math.round(highscore)))).row();
+        mainTable.add(addLabel("Distance: " + Integer.toString(Math.round(score)) + " m")).row();
+        mainTable.add(addLabel("Best: " + Integer.toString(Math.round(highscore)) + " m")).row();
+        mainTable.add(addLabel("Coins earned: +" + coinsEarned)).row();
+        mainTable.add(addLabel("Total coins: " + SaveData.get().money)).row();
 
 
         addButton("Back to menu").addListener(new ClickListener(){

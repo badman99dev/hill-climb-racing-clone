@@ -34,27 +34,35 @@ public class Vehicle extends InputAdapter {
     private float fuel = 100;
     private final float fuelConsumptionRatio; // 1 represents 1 unit per second
     private final float jointFrictionForce;
+    private final float wheelFriction;
+    private final float suspensionFrequency;
+    private final float suspensionDamping;
+    private final float maxMotorTorque;
+    private final float airRotationImpulse;
     private int gasPointer = -1;   // active touch pointer id for gas (right side)
     private int brakePointer = -1; // active touch pointer id for brake/reverse (left side)
     private final SpriteBatch spriteBatch;
 
-    public Vehicle(World world, float x, float y, float width, float height,
-                   float wheelRadius, float suspensionHeight, float leftOffset, float rightOffset,
-                   float forwardSpeed, float backwardSpeed, float fuelConsumptionRatio,
-                   float jointFrictionForce, Texture carTexture, Texture wheelTexture) {
+    public Vehicle(World world, float x, float y, VehicleStats stats,
+                   Texture carTexture, Texture wheelTexture) {
         this.world = world;
-        this.width = width;
-        this.height = height;
-        this.wheelRadius = wheelRadius;
-        this.suspensionHeight = suspensionHeight;
-        this.leftOffset = leftOffset;
-        this.rightOffset = rightOffset;
-        this.forwardSpeed = forwardSpeed;
-        this.backwardSpeed = backwardSpeed;
+        this.width = stats.bodyWidth;
+        this.height = stats.bodyHeight;
+        this.wheelRadius = stats.wheelRadius;
+        this.suspensionHeight = stats.suspensionHeight;
+        this.leftOffset = stats.leftOffset;
+        this.rightOffset = stats.rightOffset;
+        this.forwardSpeed = stats.forwardSpeed;
+        this.backwardSpeed = stats.backwardSpeed;
         this.rotate_left = false;
         this.rotate_right = false;
-        this.fuelConsumptionRatio = fuelConsumptionRatio;
-        this.jointFrictionForce = jointFrictionForce;
+        this.fuelConsumptionRatio = stats.fuelConsumptionRatio;
+        this.jointFrictionForce = stats.jointFrictionForce;
+        this.wheelFriction = stats.wheelFriction;
+        this.suspensionFrequency = stats.suspensionFrequency;
+        this.suspensionDamping = stats.suspensionDamping;
+        this.maxMotorTorque = stats.maxMotorTorque;
+        this.airRotationImpulse = stats.airRotationImpulse;
         this.carTexture = carTexture;
         this.wheelTexture = wheelTexture;
         this.spriteBatch = new SpriteBatch();
@@ -91,7 +99,7 @@ public class Vehicle extends InputAdapter {
         FixtureDef wheelFixtureDef = new FixtureDef();
         wheelFixtureDef.shape = wheelShape;
         wheelFixtureDef.density = 5.0f;
-        wheelFixtureDef.friction = 3f;
+        wheelFixtureDef.friction = wheelFriction;
         wheelFixtureDef.restitution = 0.3f;
 
 
@@ -114,9 +122,9 @@ public class Vehicle extends InputAdapter {
         axisDef.bodyA = body;
         axisDef.bodyB = leftWheel;
         axisDef.localAxisA.set(0, 1);
-        axisDef.frequencyHz = 3f;
-        axisDef.dampingRatio = 0.9f;
-        axisDef.maxMotorTorque = 0.1f;
+        axisDef.frequencyHz = suspensionFrequency;
+        axisDef.dampingRatio = suspensionDamping;
+        axisDef.maxMotorTorque = maxMotorTorque;
         axisDef.localAnchorA.set(leftWheel.getPosition().x - body.getPosition().x, leftWheel.getPosition().y - body.getPosition().y);
         leftAxis = (WheelJoint) world.createJoint(axisDef);
 
@@ -310,9 +318,12 @@ public class Vehicle extends InputAdapter {
     }
 
     public void update() {
-        // update fuel level
+        // Fuel only burns while the throttle is applied (gas or reverse).
+        boolean throttling = rotate_left || rotate_right;
         if (fuel > 0f) {
-            fuel -= 1/60f * fuelConsumptionRatio;
+            if (throttling) {
+                fuel -= 1/60f * fuelConsumptionRatio;
+            }
         } else {
             fuel = 0f;
             leftAxis.enableMotor(false);
@@ -321,9 +332,9 @@ public class Vehicle extends InputAdapter {
         if (rotate_left && rotate_right || !canMove()){
             // do nothing
         } else if (rotate_right) {
-            body.applyAngularImpulse(-0.005f, true);
+            body.applyAngularImpulse(-airRotationImpulse, true);
         } else if (rotate_left) {
-            body.applyAngularImpulse(0.005f, true);
+            body.applyAngularImpulse(airRotationImpulse, true);
             //System.out.println(body.getAngularVelocity());
         }
 
@@ -343,6 +354,40 @@ public class Vehicle extends InputAdapter {
     }
     public Body getBody() {
         return body;
+    }
+
+    public Vector2 getLeftWheelPosition() {
+        return leftWheel.getPosition();
+    }
+
+    public Vector2 getRightWheelPosition() {
+        return rightWheel.getPosition();
+    }
+
+    private boolean isWheelTouchingGround(Body wheel) {
+        com.badlogic.gdx.utils.Array<com.badlogic.gdx.physics.box2d.Contact> contacts = world.getContactList();
+        for (int i = 0; i < contacts.size; i++) {
+            com.badlogic.gdx.physics.box2d.Contact c = contacts.get(i);
+            if (!c.isTouching()) continue;
+            com.badlogic.gdx.physics.box2d.Fixture fa = c.getFixtureA();
+            com.badlogic.gdx.physics.box2d.Fixture fb = c.getFixtureB();
+            com.badlogic.gdx.physics.box2d.Fixture other;
+            if (fa.getBody() == wheel) {
+                other = fb;
+            } else if (fb.getBody() == wheel) {
+                other = fa;
+            } else {
+                continue;
+            }
+            // Ignore sensor fixtures (coins, fuel cans) - only solid ground counts.
+            if (other.isSensor()) continue;
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isAirborne() {
+        return !isWheelTouchingGround(leftWheel) && !isWheelTouchingGround(rightWheel);
     }
 
     public float getBoxCollisionHeight() {

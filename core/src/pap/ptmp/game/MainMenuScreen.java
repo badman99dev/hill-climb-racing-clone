@@ -47,6 +47,12 @@ public class MainMenuScreen extends ScreenAdapter{
                 game.setScreen(new MapSelectScreen(assetManager, game));
             }
         });
+        addButton("Garage").addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y){
+                game.setScreen(new UpgradeScreen(assetManager, game));
+            }
+        });
         addButton("Controls").addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y){
