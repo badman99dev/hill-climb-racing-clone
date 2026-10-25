@@ -1,5 +1,6 @@
 package pap.ptmp.game;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -33,6 +34,9 @@ public class Vehicle extends InputAdapter {
     private float fuel = 100;
     private final float fuelConsumptionRatio; // 1 represents 1 unit per second
     private final float jointFrictionForce;
+    private int gasPointer = -1;   // active touch pointer id for gas (right side)
+    private int brakePointer = -1; // active touch pointer id for brake/reverse (left side)
+    private final SpriteBatch spriteBatch;
 
     public Vehicle(World world, float x, float y, float width, float height,
                    float wheelRadius, float suspensionHeight, float leftOffset, float rightOffset,
@@ -53,6 +57,7 @@ public class Vehicle extends InputAdapter {
         this.jointFrictionForce = jointFrictionForce;
         this.carTexture = carTexture;
         this.wheelTexture = wheelTexture;
+        this.spriteBatch = new SpriteBatch();
         createBody(x, y);
         createWheels();
         VehicleCollisionBox vcb = new VehicleCollisionBox(world, this);
@@ -135,7 +140,7 @@ public class Vehicle extends InputAdapter {
         float rotatedY = (float) (bodyY + Math.sin(bodyAngle) * relativeX + Math.cos(bodyAngle) * relativeY);
         float rotation = MathUtils.radiansToDegrees * body.getAngle();
 
-        SpriteBatch spriteBatch = new SpriteBatch();
+        SpriteBatch spriteBatch = this.spriteBatch;
         spriteBatch.begin();
         spriteBatch.setProjectionMatrix(camera.combined);
         spriteBatch.draw(carTexture, rotatedX, rotatedY, 0f, 0f, 1.44f, 0.7f, 1f,
@@ -165,28 +170,68 @@ public class Vehicle extends InputAdapter {
         return fuel > 0;
     }
 
+    // ---- Control actions (shared by keyboard and touch) ----
+
+    public void pressForward() {
+        if ((!leftWheel.isFixedRotation()) && canMove()) {
+            leftAxis.enableMotor(true);
+            leftAxis.setMotorSpeed(-forwardSpeed);
+        }
+        rotate_left = true;
+    }
+
+    public void releaseForward() {
+        rotate_left = false;
+        leftAxis.enableMotor(false);
+    }
+
+    public void pressBackward() {
+        if ((!leftWheel.isFixedRotation()) && canMove()) {
+            leftAxis.enableMotor(true);
+            leftAxis.setMotorSpeed(backwardSpeed);
+        }
+        rotate_right = true;
+    }
+
+    public void releaseBackward() {
+        rotate_right = false;
+        leftAxis.enableMotor(false);
+    }
+
+    public void pressBrake() {
+        leftAxis.enableMotor(false);
+        rightAxis.enableMotor(false);
+        leftWheel.setFixedRotation(true);
+        rightWheel.setFixedRotation(true);
+    }
+
+    public void releaseBrake() {
+        leftWheel.setFixedRotation(false);
+        rightWheel.setFixedRotation(false);
+    }
+
+    public boolean isForwardPressed() {
+        return rotate_left;
+    }
+
+    public boolean isBackwardPressed() {
+        return rotate_right;
+    }
+
     @Override
     public boolean keyDown(int keycode) {
         switch(keycode) {
             case Input.Keys.W:
-                if ((!leftWheel.isFixedRotation()) && canMove()) {
-                    leftAxis.enableMotor(true);
-                    leftAxis.setMotorSpeed(-forwardSpeed);
-                }
-                rotate_left = true;
+            case Input.Keys.UP:
+                pressForward();
                 break;
             case Input.Keys.S:
-                if ((!leftWheel.isFixedRotation()) && canMove()) {
-                    leftAxis.enableMotor(true);
-                    leftAxis.setMotorSpeed(backwardSpeed);
-                }
-                rotate_right = true;
+            case Input.Keys.DOWN:
+                pressBackward();
                 break;
             case Input.Keys.SPACE:
-                leftAxis.enableMotor(false);
-                rightAxis.enableMotor(false);
-                leftWheel.setFixedRotation(true);
-                rightWheel.setFixedRotation(true);
+                pressBrake();
+                break;
         }
         return true;
     }
@@ -195,16 +240,69 @@ public class Vehicle extends InputAdapter {
     public boolean keyUp(int keycode) {
         switch(keycode) {
             case Input.Keys.SPACE:
-                leftWheel.setFixedRotation(false);
-                rightWheel.setFixedRotation(false);
+                releaseBrake();
             case Input.Keys.W:
-                rotate_left = false;
+            case Input.Keys.UP:
+                releaseForward();
             case Input.Keys.S:
-                leftAxis.enableMotor(false);
-                rotate_right = false;
+            case Input.Keys.DOWN:
+                releaseBackward();
                 break;
         }
        return true;
+    }
+
+    // ---- On-screen touch controls (Android) ----
+    // Right half of the screen = gas, left half = brake/reverse.
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        int half = Gdx.graphics.getWidth() / 2;
+        if (screenX >= half) {
+            if (gasPointer < 0) {
+                gasPointer = pointer;
+                pressForward();
+            }
+        } else {
+            if (brakePointer < 0) {
+                brakePointer = pointer;
+                pressBackward();
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        if (pointer == gasPointer) {
+            gasPointer = -1;
+            releaseForward();
+        }
+        if (pointer == brakePointer) {
+            brakePointer = -1;
+            releaseBackward();
+        }
+        return true;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        int half = Gdx.graphics.getWidth() / 2;
+        boolean right = screenX >= half;
+        if (right && pointer == brakePointer) {
+            brakePointer = -1;
+            releaseBackward();
+        } else if (!right && pointer == gasPointer) {
+            gasPointer = -1;
+            releaseForward();
+        } else if (right && gasPointer < 0) {
+            gasPointer = pointer;
+            pressForward();
+        } else if (!right && brakePointer < 0) {
+            brakePointer = pointer;
+            pressBackward();
+        }
+        return true;
     }
 
     public Vector2 getPosition() {

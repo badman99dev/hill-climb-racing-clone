@@ -29,13 +29,24 @@ public class MapIO {
         }
     }
 
-    static String filename = "./maps.txt";
+    static String filename = "maps.txt";
     ArrayList<MapData> loadedMaps;
 
     public MapIO() {
         // filename = set_filename;
         loadedMaps = new ArrayList<MapData>();
         loadMapData();
+    }
+
+    // Reads the writable copy if it exists (created after the first high score update),
+    // otherwise falls back to the read-only copy bundled with the app assets.
+    // On desktop both point to the same working directory; on Android they differ.
+    private static FileHandle readHandle() {
+        FileHandle local = Gdx.files.local(filename);
+        if (local.exists()) {
+            return local;
+        }
+        return Gdx.files.internal(filename);
     }
 
     public ArrayList<MapData> getMaps()
@@ -45,7 +56,7 @@ public class MapIO {
 
     private void loadMapData() {
         try {
-            FileHandle fileHandle = Gdx.files.internal(filename);
+            FileHandle fileHandle = readHandle();
             BufferedReader bufferedReader = new BufferedReader(fileHandle.reader());
 
             // Reading file content (this part is just an example and may not work if the file doesn't exist)
@@ -75,7 +86,7 @@ public class MapIO {
     static public void updateHighScore(int targetId, float newHighScore) {
         try {
             // Read the existing content
-            FileHandle fileHandle = Gdx.files.internal(filename);
+            FileHandle fileHandle = readHandle();
             BufferedReader bufferedReader = new BufferedReader(fileHandle.reader());
             StringBuilder fileContent = new StringBuilder();
 
@@ -108,17 +119,13 @@ public class MapIO {
     }
 
     Texture getTexture(int id) {
-        Assets assets = new Assets();
-        assets.loadAll();
-        AssetManager assetManager = assets.getAssetManager();
-        assetManager.finishLoading();
         switch (id) {
             case 1:
-                return assetManager.get(Assets.GRASS_TEXTURE);
+                return new Texture(Gdx.files.internal(Assets.GRASS_TEXTURE));
             case 2:
-                return assetManager.get(Assets.MARS_TEXTURE);
+                return new Texture(Gdx.files.internal(Assets.MARS_TEXTURE));
             case 3:
-                return assetManager.get(Assets.MOON_TEXTURE);
+                return new Texture(Gdx.files.internal(Assets.MOON_TEXTURE));
             default:
                 Gdx.app.error("Texture error", "Invalid map id: " + id);
                 return null;

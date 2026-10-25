@@ -1,0 +1,2 @@
+-keep class pap.ptmp.game.** { *; }
+-dontwarn com.badlogic.gdx.**

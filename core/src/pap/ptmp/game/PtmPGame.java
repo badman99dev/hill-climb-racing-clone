@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
@@ -50,6 +51,9 @@ public class PtmPGame extends ScreenAdapter{
 	private AssetManager assetManager;
 	private float fontHeight;
 	private float halfFontHeight;
+	private ShapeRenderer hudRenderer;
+	private OrthographicCamera hudCamera;
+	private BitmapFont hudFont;
 
 	public PtmPGame(UI game, MapIO.MapData mapData, int carId, AssetManager assetManager, Music music_background){
 		this.game = game;
@@ -75,6 +79,10 @@ public class PtmPGame extends ScreenAdapter{
 		font.getData().setScale(3f);
 		fontHeight = font.getCapHeight();
 		halfFontHeight = fontHeight * 0.5f;
+		hudRenderer = new ShapeRenderer();
+		hudCamera = new OrthographicCamera();
+		hudFont = new BitmapFont();
+		hudFont.getData().setScale(2f);
 		highscore = mapData.high_score;
 		mapID = mapData.id;
 		viewport = new ExtendViewport(1080, 720);
@@ -170,7 +178,9 @@ public class PtmPGame extends ScreenAdapter{
 		System.out.println(fuelBarX);
 		spriteBatch.end();
 
-		if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+		drawTouchControls();
+
+		if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) || Gdx.input.isKeyJustPressed(Input.Keys.BACK)) {
 			if(bestposition > highscore){
 				MapIO.updateHighScore(mapID, bestposition);
 			}
@@ -220,6 +230,39 @@ public class PtmPGame extends ScreenAdapter{
 		spriteBatch.dispose();
 		font.dispose();
 		renderer.dispose();
+		hudRenderer.dispose();
+		hudFont.dispose();
+	}
+
+	private void drawTouchControls() {
+		float w = Gdx.graphics.getWidth();
+		float h = Gdx.graphics.getHeight();
+		hudCamera.setToOrtho(false, w, h);
+		hudCamera.update();
+
+		float r = Math.min(w, h) * 0.10f;
+		float marginX = w * 0.07f;
+		float marginY = h * 0.06f;
+		float lx = marginX + r;
+		float rx = w - marginX - r;
+		float cy = marginY + r;
+
+		hudRenderer.setProjectionMatrix(hudCamera.combined);
+		hudRenderer.begin(ShapeType.Filled);
+		hudRenderer.setColor(vehicle.isBackwardPressed() ? 1f : 0.28f, 0.18f, 0.18f, 1f);
+		hudRenderer.circle(lx, cy, r, 48);
+		hudRenderer.setColor(vehicle.isForwardPressed() ? 1f : 0.28f, 0.85f, 0.18f, 1f);
+		hudRenderer.circle(rx, cy, r, 48);
+		hudRenderer.end();
+
+		spriteBatch.setProjectionMatrix(hudCamera.combined);
+		spriteBatch.begin();
+		hudFont.setColor(1f, 1f, 1f, 0.85f);
+		GlyphLayout gl = new GlyphLayout(hudFont, "BRAKE");
+		hudFont.draw(spriteBatch, gl, lx - gl.width / 2f, cy + gl.height / 2f);
+		gl.setText(hudFont, "GAS");
+		hudFont.draw(spriteBatch, gl, rx - gl.width / 2f, cy + gl.height / 2f);
+		spriteBatch.end();
 	}
 
 	@Override
